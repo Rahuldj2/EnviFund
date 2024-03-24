@@ -2,6 +2,7 @@ import React from "react";
 import { useSession, signIn, signOut } from "next-auth/react";
 import Navbar from "@/components/Navbar";
 import LandingPage from "@/components/LandingPage";
+import Layout from "@/components/Layout";
 
 const Home = () => {
   const { data: session } = useSession();
@@ -13,7 +14,7 @@ const Home = () => {
 
   return (
     <>
-    <Navbar />
+    {/* <Layout> */}
     <div className="min-h-screen flex flex-col justify-center items-center bg-white">
       
       <div className="text-center mt-8">
@@ -30,6 +31,7 @@ const Home = () => {
         )}
       </div>
     </div>
+    {/* </Layout> */}
 
     </>
   );
