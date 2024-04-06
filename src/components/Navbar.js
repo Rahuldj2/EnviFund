@@ -62,7 +62,7 @@ const Navbar = () => {
             <>
             
             <div>
-            <a href="/" className="text-xl font-bold">Project Dashboard</a>
+            <a href="/GetMyProjects" className="text-xl font-bold">Project Dashboard</a>
           </div>
 
           <div>
