@@ -1,9 +1,8 @@
 import React from "react";
-import { useSession,signIn,signOut } from "next-auth/react";
-import Navbar from "@/components/Navbar";
-import LandingPage from "@/components/LandingPage";
-import Layout from "@/components/Layout";
-import Head from "next/head";
+import { useSession,signIn } from "next-auth/react";
+import Welcome from "@/components/Welcome";
+import Initiatives from "./Initiatives";
+import About from "./About";
 
 const Home = () => {
   const { data: session } = useSession();
@@ -15,46 +14,49 @@ const Home = () => {
 
   return (
     <>
-
-      <Head>
-        <title>EnviFund</title>
-        <meta name="description" content="EnviFund" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
-
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="manifest" href="/site.webmanifest" />
-
-        <meta charSet="UTF-8" />
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="true" />
-        <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css' />
-
-        <link href="https://fonts.googleapis.com/css2?family=Montserrat&family=Orbitron&display=swap" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
-      </Head>
-
-      {/* <Layout> */}
-      <div className="min-h-screen flex flex-col justify-center items-center bg-white">
-
+      <div className="min-h-screen flex flex-col justify-center items-center bg-gradient-to-b from-themeBlack via-calmBlue to-tealBlue">
         <div className="text-center mt-8">
           {session ? (
             //DISPLAY WELCOME MESSAGE
             <div>
-              <p className="mb-4" style={{ color: 'black' }}>Welcome {session.user.name}</p>
+              <p className="mb-4 text-white">Welcome {session.user.name}</p>
             </div>
           ) : (
             //DISPLAY RANDOM INFO ABOUT WEBSITE
             <div>
-              <LandingPage />
+              <Welcome />
             </div>
           )}
         </div>
       </div>
-      {/* </Layout> */}
-
+      {session ? (
+        <>
+          <div id="dashboard" className="min-h-screen bg-white">
+            {/* Dashboard content */}
+          </div>
+          <div id="investments" className="min-h-screen bg-white">
+            {/* Investments content */}
+          </div>
+          <div id="profile" className="min-h-screen bg-white">
+            {/* Profile content */}
+          </div>
+        </>
+      ) : (
+        <>
+          <div id="home" className="min-h-screen bg-white">
+              {/* Home content */}
+              <Welcome />
+          </div>
+          <div id="initiatives" className="min-h-screen bg-white">
+              {/* Initiatives content */}
+              <Initiatives />
+          </div>
+          <div id="about" className="min-h-screen bg-white">
+              {/* About content */}
+              <About />
+          </div>
+        </>
+      )}
     </>
   );
 };
