@@ -2,6 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useMoralis,useWeb3Contract } from 'react-moralis';
 import axios from 'axios';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
+import { ethers } from 'ethers';
+import Web3Modal from "web3modal";
+
+
 
 const ContractTesting = () => {
     const { account, Moralis } = useMoralis();
@@ -14,13 +18,8 @@ const ContractTesting = () => {
         abi:contractABI,
         contractAddress:contractAddress,
         functionName:"createProject",
-        params:{"_fundingGoal":1000,"_title":"Test Project"},
+        params:{"_fundingGoal":3000,"_title":"Test Project 3"},
     })
-
-    useEffect(() => {  
-        console.log(contractABI)
-        console.log(contractAddress)
-    }, []);
 
     const handleClick = async (action) => {
         try {
