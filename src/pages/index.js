@@ -37,6 +37,9 @@ const Home = () => {
           <div id="investments" className="min-h-screen bg-white">
             {/* Investments content */}
           </div>
+          <div id="projects" className="min-h-screen bg-white">
+            {/* Investments content */}
+          </div>
           <div id="profile" className="min-h-screen bg-white">
             {/* Profile content */}
           </div>

@@ -35,6 +35,17 @@ const Navbar = () => {
               Investments
             </Link>
             <Link
+              to="projects"
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
+              activeClass="active"
+              className="text-xl font-bold hover:underline"
+            >
+              Projects
+            </Link>
+            <Link
               to="profile"
               spy={true}
               smooth={true}
