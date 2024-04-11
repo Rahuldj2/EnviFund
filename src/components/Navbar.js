@@ -97,6 +97,7 @@ const Navbar = () => {
         )}
       </div>
 
+      
       {/* Sign In Out Part */}
       <div className="flex items-center space-x-4">
         {session ? (
