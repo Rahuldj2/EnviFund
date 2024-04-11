@@ -3,12 +3,33 @@ import React from "react";
 import { useSession,signIn,signOut } from "next-auth/react";
 import Image from "next/image";
 import { Link } from "react-scroll";
+import { useEffect, useState } from "react";
 
 const Navbar = () => {
   const { data: session } = useSession();
+  const [scrolling,setScrolling] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setScrolling(true);
+      } else {
+        setScrolling(false);
+      }
+    };
+
+    window.addEventListener("scroll",handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll",handleScroll);
+    };
+  },[]);
 
   return (
-    <nav className="flex justify-between items-center py-4 px-8 text-white">
+    <nav
+      className={`flex justify-between items-center py-4 px-8 text-white sticky top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue ${scrolling ? "opacity-90" : ""
+        }`}
+    >
       <div className="flex items-center space-x-8">
         {session ? (
           <>
