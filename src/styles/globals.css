@@ -1,11 +1,15 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Titillium+Web:ital,wght@0,200;0,300;0,400;0,600;0,700;0,900;1,200;1,300;1,400;1,600;1,700&display=swap');
 
 :root {
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  font-family: "Titanium Web", sans-serif;
+  font-weight: 600;
 }
 
 @media (prefers-color-scheme: light) {
@@ -17,13 +21,14 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
-  /* background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb)); */
+  background: var(grootGreen);
+  background: linear-gradient(90deg,
+      rgba(6, 8, 9, 1) 0%,
+      rgba(2, 57, 92, 1) 35%,
+      rgba(2, 70, 104, 1) 70%,
+      rgba(2, 85, 104, 1) 100%,
+      rgba(2, 76, 111, 1) 100%,
+      rgba(2, 110, 151, 1) 100%);
 }
 
 @layer utilities {
