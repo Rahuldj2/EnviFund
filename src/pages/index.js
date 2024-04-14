@@ -3,6 +3,7 @@ import { useSession,signIn } from "next-auth/react";
 import Welcome from "@/components/Welcome";
 import Initiatives from "./Initiatives";
 import About from "./About";
+import GetMyProjects from "./GetMyProjects";
 
 const Home = () => {
   const { data: session } = useSession();
@@ -18,13 +19,43 @@ const Home = () => {
         <div className="text-center mt-8">
           {session ? (
             //DISPLAY WELCOME MESSAGE
+            <>
             <div>
               <p className="mb-4 text-white">Welcome {session.user.name}</p>
+              
             </div>
+            <div id="dashboard" className="bg-white">
+                {/* Dashboard content */}
+              </div>
+              <div id="investments" className="bg-white">
+                {/* Investments content */}
+              </div>
+              <div id="projects" className="bg-white">
+                {/* Investments content */}
+                <GetMyProjects />
+              </div>
+              <div id="profile" className="bg-white">
+                {/* Profile content */}
+              </div>
+            </>
           ) : (
+
             //DISPLAY RANDOM INFO ABOUT WEBSITE
             <div>
-              <Welcome />
+                {/* <Welcome /> */}
+                
+                <div id="home" className="min-h-screen bg-white">
+                  {/* Home content */}
+                  <Welcome />
+                </div>
+                <div id="initiatives" className="min-h-screen bg-white">
+                  {/* Initiatives content */}
+                  <Initiatives />
+                </div>
+                <div id="about" className="min-h-screen bg-white">
+                  {/* About content */}
+                  <About />
+                </div>
             </div>
           )}
         </div>
@@ -47,16 +78,16 @@ const Home = () => {
       ) : (
         <>
           <div id="home" className="min-h-screen bg-white">
-              {/* Home content */}
-              <Welcome />
+            {/* Home content */}
+            <Welcome />
           </div>
           <div id="initiatives" className="min-h-screen bg-white">
-              {/* Initiatives content */}
-              <Initiatives />
+            {/* Initiatives content */}
+            <Initiatives />
           </div>
           <div id="about" className="min-h-screen bg-white">
-              {/* About content */}
-              <About />
+            {/* About content */}
+            <About />
           </div>
         </>
       )}

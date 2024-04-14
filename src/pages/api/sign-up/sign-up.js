@@ -11,7 +11,7 @@ export default async function handler(req,res) {
     // Validate the request body here if needed
 
     const { data,error } = await supabase
-      .from('Profile')
+      .from('users')
       .insert([
         {
           name: name,
