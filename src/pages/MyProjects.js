@@ -1,6 +1,7 @@
 // pages/MyProjects.js
 import React from "react";
 import ProjectCard from "@/components/ProjectCard";
+import CreateProjectCard from "@/components/CreateProjectCard";
 
 const MyProjects = () => {
   // Sample data
@@ -31,9 +32,12 @@ const MyProjects = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-3xl font-semibold mb-8">My Projects</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+        {/* CreateProjectCard component */}
+        <CreateProjectCard />
+        {/* Map through projects and render ProjectCard components */}
         {projects.map((project) => (
-          <ProjectCard key={project.project_id} project={project} />
+          <ProjectCard key={project.id} project={project} />
         ))}
       </div>
     </div>
