@@ -9,7 +9,7 @@ const CreateProjectCard = ({ onClick }) => {
             onClick={onClick}
         >
             <PlusIcon className="h-24 text-gray-200" />
-            <h4 className="text-2xl font-semibold text-white">Create New Project</h4>
+            <h4 className="text-2xl font-semibold text-white">Add New Project</h4>
         </div>
 
         // <Link href="/create-project">

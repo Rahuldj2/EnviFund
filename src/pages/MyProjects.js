@@ -28,15 +28,16 @@ const MyProjects = () => {
           <ProjectCard key={project.id} project={project} />
         ))}
       </div>
-      
+
       {/* Sliding pane */}
       <SlidingPane
         isOpen={isPaneOpen}
-        title="Create New Project"
-        subtitle="Fill in the details"
+        title="Add New Project"
+        // subtitle="Fill in the details"
         onRequestClose={handleClosePane}
         from="bottom"
-        width="100%"
+        width="90%"
+        childrenWrapperStyle={{ background: "#0f0000" }}
       >
         <ProjectCreationForm />
       </SlidingPane>
