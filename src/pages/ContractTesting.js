@@ -19,7 +19,7 @@ const ContractTesting = () => {
         abi:contractABI,
         contractAddress:contractAddress,
         functionName:"createProject",
-        params:{"_fundingGoal":3000,"_title":"Test Project 2", "_description":"This is a test project 2","_location":"Test Location","_imageUrL":"Test Image","_ownerEmail":session?.user.email},
+        params:{"_fundingGoal":4000,"_title":"Test Project 3", "_description":"This is a test project 4","_location":"Test Location","_imageUrL":"Test Image","_ownerEmail":session?.user.email},
     })
 
     const handleClick = async (action) => {

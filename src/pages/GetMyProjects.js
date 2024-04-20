@@ -16,9 +16,9 @@ const GetMyProjects = () => {
   useEffect(() => {
     if (account) {
       loadData();
-      console.log(projects)
     }
-  }, [account]);
+  }, [account,projects]);
+
 
   //Function to load the data from blockchain
   async function loadData() {
@@ -36,6 +36,11 @@ const GetMyProjects = () => {
     return parseInt(hexString, 16);
   };
 
+
+  const convertToMatic=(wei)=>{
+    const conversionFactor = 10 ** 18; // 1 Matic = 10^18 Wei
+  return wei / conversionFactor;
+  };
   const handleCreateProject = async (projectData) => {
     // Your logic to create project
     console.log("Creating project with data:", projectData);
@@ -55,14 +60,12 @@ const GetMyProjects = () => {
           <p className="text-gray-600 mb-2">Title: {project[1]}</p>
           <p className="text-gray-600 mb-2">Owner: {project[2]}</p>
           <p className="text-gray-600 mb-2">Funding Goal: {hexToDecimal(project[3]._hex)}</p>
-          <p className="text-gray-600 mb-2">Current Balance: {hexToDecimal(project[4]._hex)}</p>
-          <p className="text-gray-600">Locked Funds: {hexToDecimal(project[5]._hex)}</p>
+          <p className="text-gray-600 mb-2">Current Balance: {convertToMatic(hexToDecimal(project[4]._hex))} MATIC</p>
+          <p className="text-gray-600">Locked Funds: {convertToMatic(hexToDecimal(project[5]._hex))} MATIC</p>
           <p className="text-gray-600">Description: {project[6]}</p>
           <p className="text-gray-600">Location: {project[7]}</p>
           <p className="text-gray-600">imageURL: {project[9]}</p>
           <p className="text-gray-600">ownerEmail: {project[10]}</p>
-
-
         </div>
       ))}
 
