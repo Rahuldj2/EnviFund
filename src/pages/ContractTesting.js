@@ -4,7 +4,7 @@ import axios from 'axios';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import { ethers } from 'ethers';
 import Web3Modal from "web3modal";
-
+import { useSession } from 'next-auth/react';
 
 
 const ContractTesting = () => {
@@ -13,12 +13,13 @@ const ContractTesting = () => {
     const [projectId, setProjectId] = useState('');
     const [fundingGoal, setFundingGoal] = useState('');
     const [title, setTitle] = useState('');
+    const { data: session, status } = useSession()
        
     const {runContractFunction: createProject}=useWeb3Contract({
         abi:contractABI,
         contractAddress:contractAddress,
         functionName:"createProject",
-        params:{"_fundingGoal":3000,"_title":"Test Project 3"},
+        params:{"_fundingGoal":4000,"_title":"Test Project 3", "_description":"This is a test project 4","_location":"Test Location","_imageUrL":"Test Image","_ownerEmail":session?.user.email},
     })
 
     const handleClick = async (action) => {
