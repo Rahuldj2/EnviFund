@@ -28,9 +28,8 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`flex justify-between items-center py-4 px-8 text-white sticky top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue ${
-        scrolling ? "opacity-90" : ""
-      }`}
+      className={`z-50  border-b-2 border-white flex justify-between items-center py-4 px-8 text-white sticky top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue ${scrolling ? "opacity-90" : ""
+        }`}
     >
       <div className="flex items-center space-x-8">
         {session ? (
@@ -42,23 +41,9 @@ const Navbar = () => {
               offset={-70}
               duration={500}
               activeClass="active"
-              className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/MyProjects")}
+              className="text-xl font-bold hover:underline"
             >
-              Dashboard
-            </Link>
-
-            <Link
-              to="/BrowseProjects"
-              spy={true}
-              smooth={true}
-              offset={-70}
-              duration={500}
-              activeClass="active"
-              className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/BrowseProjects")}
-            >
-              Browse
+             <span>Dashboard</span> 
             </Link>
             <Link
               to="investments"
