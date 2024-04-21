@@ -1,10 +1,15 @@
-import React from "react";
+import React, { useState } from "react";
 import ProgressBar from "react-customizable-progressbar";
 import Image from "next/image";
 import EthereumLogo from "/public/icons/icons8-ethereum-logo-128.png";
 import RupeeLogo from "/public/icons/icons8-rupee-100.png";
+import { createContext } from "react";
 
-const ProjectCardCrypto= ({ project,funding_type}) => {
+import SlidingPane from 'react-sliding-pane';
+import ProjectDetailsModal from "@/components/ProjectDetailsModal";
+export const projectInfoContext = createContext();
+
+const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
     // const {
     //     project_title,
     //     location,
@@ -12,6 +17,14 @@ const ProjectCardCrypto= ({ project,funding_type}) => {
     //     funding_amount,
     //     funding_goal_reached,
     // } = project;
+    const[isOpen,setOpen]=useState(false);
+    const handleProjectClick = (project) => {
+        setOpen(true);
+    }
+
+    const handleClose= () => {
+        setOpen(false);
+      };
 
     const hexToDecimal = (hexString) => {
         return parseInt(hexString, 16);
@@ -38,7 +51,13 @@ const ProjectCardCrypto= ({ project,funding_type}) => {
     const progress = (funding_amount / funding_goal) * 100;
 
     return (
-        <div className={`flex flex-col relative bg-white rounded-lg shadow-md mb-6 border-y-8 ${isCryptoProject ? "border-blue-500" : "border-yellow-500"} justify-start min-w-min cursor-pointer transition-transform hover:scale-105 transform-gpu hover:shadow-xl`}>
+        <projectInfoContext.Provider value={{project_id,project_title,location,owner,funding_goal,funding_amount,locked_funds,Description,imageURL,ownerEmail}}>
+        <div className={`flex 
+        flex-col relative bg-white rounded-lg 
+        shadow-md mb-6 border-y-8
+         ${isCryptoProject ? "border-blue-500" : "border-yellow-500"} 
+         justify-start min-w-min cursor-pointer transition-transform 
+         hover:scale-105 transform-gpu hover:shadow-xl`} onClick={handleProjectClick}>
             <div className="flex items-center">
                 <h2 className={`text-lg font-semibold ${isCryptoProject ? "text-blue-600" : "text-yellow-500"} text-balance pl-4`}>
                     {project_title}
@@ -65,6 +84,10 @@ const ProjectCardCrypto= ({ project,funding_type}) => {
                 <p className="text-sm text-gray-800">
                     Location: {location}
                 </p>
+
+                <p className="text-sm text-gray-800">
+                    Owner Address: {owner.slice(0,4)}...{owner.slice(-4)}
+                </p>
             </div>
             <div className="absolute w-7 h-7 bg-current rounded-full -bottom-3 -start-1">
                 <Image
@@ -75,6 +98,19 @@ const ProjectCardCrypto= ({ project,funding_type}) => {
                 />
             </div>
         </div>
+
+        <SlidingPane
+        isOpen={isOpen}
+        title="Project Details"
+        // subtitle="Fill in the details"
+        onRequestClose={handleClose}
+        from="top"
+        width="90%"
+        childrenWrapperStyle={{ background: "#0f0000" }}
+      >
+        <ProjectDetailsModal />
+      </SlidingPane>
+        </projectInfoContext.Provider>
     );
 };
 
