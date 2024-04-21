@@ -1,5 +1,9 @@
 import React,{ useState } from 'react';
-
+import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
+import { ethers } from 'ethers';
+import Web3Modal from "web3modal";
+import { useSession } from 'next-auth/react';
+import { useMoralis,useWeb3Contract } from 'react-moralis';
 const ProjectCreationForm = () => {
   const [formData,setFormData] = useState({
     projectTitle: '',
@@ -9,6 +13,17 @@ const ProjectCreationForm = () => {
     location: '',
     imageFile: null,
   });
+
+  // const { account, Moralis } = useMoralis();
+  const { data: session, status } = useSession()
+
+  const {runContractFunction: createProject}=useWeb3Contract({
+    abi:contractABI,
+    contractAddress:contractAddress,
+    functionName:"createProject",
+    params:{"_fundingGoal":formData.fundingGoal,"_title":formData.projectTitle, "_description":formData.projectDescription,
+    "_location":formData.location,"_imageUrL":"Test Image URL","_ownerEmail":session?.user.email},
+})
 
   const handleChange = (e) => {
     const { name,value } = e.target;
@@ -20,10 +35,17 @@ const ProjectCreationForm = () => {
     setFormData({ ...formData,imageFile: file });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission (e.g., send data to backend)
     console.log(formData);
+    if (formData.fundingType === 'cryptocurrency') {
+      await createProject()
+    }
+    else
+    {
+      //send data to database
+    }
     // Reset form fields
     setFormData({
       projectTitle: '',
