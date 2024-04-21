@@ -4,9 +4,11 @@ import Image from "next/image";
 import EthereumLogo from "/public/icons/icons8-ethereum-logo-128.png";
 import RupeeLogo from "/public/icons/icons8-rupee-100.png";
 import { createContext } from "react";
-
+import Web3Modal from "web3modal";
+import { ethers } from "ethers";
 import SlidingPane from 'react-sliding-pane';
 import ProjectDetailsModal from "@/components/ProjectDetailsModal";
+import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 export const projectInfoContext = createContext();
 
 const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
@@ -18,8 +20,22 @@ const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
     //     funding_goal_reached,
     // } = project;
     const[isOpen,setOpen]=useState(false);
+    const[investors,setInvestors]=useState([]);
+
+    async function loadInvestorData() {
+        const web3modal = new Web3Modal();
+        const connection = await web3modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        const investors_ret = await contract.getAllInvestorsByProject(project.project_id);
+        setInvestors(investors_ret);
+      }
+
     function handleProjectClick(project) {
         setOpen(true);
+        // loadInvestorData();
+        // console.log(investors);
     }
 
     const handleClose= () => {
@@ -28,7 +44,7 @@ const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
 
     const hexToDecimal = (hexString) => {
         return parseInt(hexString, 16);
-      };
+      };    
     
     
       const convertToMatic=(wei)=>{
@@ -51,7 +67,7 @@ const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
     const progress = (funding_amount / funding_goal) * 100;
 
     return (
-        <projectInfoContext.Provider value={{project_id,project_title,location,owner,funding_goal,funding_amount,locked_funds,Description,imageURL,ownerEmail,isCryptoProject}}>
+        <projectInfoContext.Provider value={{project_id,project_title,location,owner,funding_goal,funding_amount,locked_funds,Description,imageURL,ownerEmail,isCryptoProject,investors}}>
         <div className={`flex 
         flex-col relative bg-white rounded-lg 
         shadow-md mb-6 border-y-8
