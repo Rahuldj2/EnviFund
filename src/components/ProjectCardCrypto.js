@@ -18,7 +18,7 @@ const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
     //     funding_goal_reached,
     // } = project;
     const[isOpen,setOpen]=useState(false);
-    const handleProjectClick = (project) => {
+    function handleProjectClick(project) {
         setOpen(true);
     }
 
@@ -51,7 +51,7 @@ const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
     const progress = (funding_amount / funding_goal) * 100;
 
     return (
-        <projectInfoContext.Provider value={{project_id,project_title,location,owner,funding_goal,funding_amount,locked_funds,Description,imageURL,ownerEmail}}>
+        <projectInfoContext.Provider value={{project_id,project_title,location,owner,funding_goal,funding_amount,locked_funds,Description,imageURL,ownerEmail,isCryptoProject}}>
         <div className={`flex 
         flex-col relative bg-white rounded-lg 
         shadow-md mb-6 border-y-8
@@ -79,7 +79,7 @@ const ProjectCardCrypto= ({ project,funding_type,onClick}) => {
             </div>
             <div className="flex flex-col text-start mb-4 ml-5">
                 <p className={`text-sm font-bold text-gray-900`}>
-                    Goal: <span className={`${funding_goal_reached ? "text-green-600" : "text-red-600"}`}>{funding_goal} {isCryptoProject ? "ETH" : "INR"}</span>
+                    Goal: <span className={`${funding_goal_reached ? "text-green-600" : "text-red-600"}`}>{funding_goal} {isCryptoProject ? "MATIC" : "INR"}</span>
                 </p>
                 <p className="text-sm text-gray-800">
                     Location: {location}

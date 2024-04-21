@@ -1,8 +1,12 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { projectInfoContext } from './ProjectCardCrypto';
 
 const ProjectDetailsModal = () => {
     const project = useContext(projectInfoContext);
+
+    useEffect(() => {
+        console.log(project);
+    }, []);
 
     return (
         <div className="p-4">
@@ -22,15 +26,15 @@ const ProjectDetailsModal = () => {
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Funding Goal:</h3>
-                    <p>{project.funding_goal} {project.isCryptoProject ? "ETH" : "INR"}</p>
+                    <p>{project.funding_goal} {project.isCryptoProject ? "MATIC" : "INR"}</p>
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Current Balance:</h3>
-                    <p>{project.funding_amount} {project.isCryptoProject ? "ETH" : "INR"}</p>
+                    <p>{project.funding_amount} {project.isCryptoProject ? "MATIC" : "INR"}</p>
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Locked Funds:</h3>
-                    <p>{project.locked_funds} {project.isCryptoProject ? "ETH" : "INR"}</p>
+                    <p>{project.locked_funds} {project.isCryptoProject ? "MATIC" : "INR"}</p>
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Description:</h3>
