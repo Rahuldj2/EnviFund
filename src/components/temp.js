@@ -42,8 +42,7 @@ const Navbar = () => {
               offset={-70}
               duration={500}
               activeClass="active"
-              className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/MyProjects")}
+              className="text-xl font-bold hover:underline"
             >
               Dashboard
             </Link>
