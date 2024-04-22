@@ -14,11 +14,11 @@ const ProjectCreationForm = () => {
     location: '',
     imageFile: null,
   });
-  const[imageUrl ,setImageUrl]=useState(null)
 
+  const[imageUrl ,setImageUrl]=useState(null);
   // const { account, Moralis } = useMoralis();
   const { data: session, status } = useSession()
-
+const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_images/"
   const {runContractFunction: createProject}=useWeb3Contract({
     abi:contractABI,
     contractAddress:contractAddress,
@@ -49,17 +49,12 @@ const ProjectCreationForm = () => {
       }
   
       if (data) {
-        const { url, error: getUrlError } =  supabase
-          .storage
-          .from('projectimages')
-          .getPublicUrl(`project_images/${formData.projectTitle}/${file.name}`);
-  
-        if (getUrlError) {
-          throw getUrlError;
-        } 
-  
-        setImageUrl(url);
-        console.log("Image URL:", url);
+        console.log("Image uploaded:", data);
+        
+    const url = BASEURL+formData.projectTitle+"/"+file.name;
+    setImageUrl(url);
+      
+    console.log("Image URL:", url);
       }
   
       setFormData({ ...formData, imageFile: file });
@@ -72,8 +67,19 @@ const ProjectCreationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission (e.g., send data to backend)
+
+
+
+  if (getUrlError) {
+    throw getUrlError;
+  } 
+
+
+  console.log("Image URL:", url);
+
+
     console.log(formData);
-    if (formData.fundingType === 'cryptocurrency') {
+    if (formData.fundingType === 'cryptocurrency'&&url!=null) {
       await createProject()
     }
     else
