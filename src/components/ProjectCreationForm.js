@@ -2,6 +2,7 @@ import React,{ useState } from 'react';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import { ethers } from 'ethers';
 import Web3Modal from "web3modal";
+import supabase from '../pages/api/dbConnection/dbConnect';
 import { useSession } from 'next-auth/react';
 import { useMoralis,useWeb3Contract } from 'react-moralis';
 const ProjectCreationForm = () => {
@@ -13,6 +14,7 @@ const ProjectCreationForm = () => {
     location: '',
     imageFile: null,
   });
+  const[imageUrl ,setImageUrl]=useState(null)
 
   // const { account, Moralis } = useMoralis();
   const { data: session, status } = useSession()
@@ -29,12 +31,44 @@ const ProjectCreationForm = () => {
     const { name,value } = e.target;
     setFormData({ ...formData,[name]: value });
   };
+ 
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setFormData({ ...formData,imageFile: file });
+
+
+  
+  const handleImageChange = async (e) => {
+    try {
+      let file = e.target.files[0];
+    
+      const { data, error } = await supabase.storage
+        .from('projectimages')
+        .upload(`project_images/${formData.projectTitle}/${file.name}`, file);
+  
+      if (error) {
+        throw error;
+      }
+  
+      if (data) {
+        const { url, error: getUrlError } =  supabase
+          .storage
+          .from('projectimages')
+          .getPublicUrl(`project_images/${formData.projectTitle}/${file.name}`);
+  
+        if (getUrlError) {
+          throw getUrlError;
+        } 
+  
+        setImageUrl(url);
+        console.log("Image URL:", url);
+      }
+  
+      setFormData({ ...formData, imageFile: file });
+    } catch (error) {
+      console.error("Error handling image change:", error);
+      // Handle error (e.g., display error message to the user)
+    }
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission (e.g., send data to backend)
