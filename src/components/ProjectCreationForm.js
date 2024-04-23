@@ -24,7 +24,7 @@ const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/publi
     contractAddress:contractAddress,
     functionName:"createProject",
     params:{"_fundingGoal":formData.fundingGoal,"_title":formData.projectTitle, "_description":formData.projectDescription,
-    "_location":formData.location,"_imageUrL":"Test Image URL","_ownerEmail":session?.user.email},
+    "_location":formData.location,"_imageUrL":imageUrl,"_ownerEmail":session?.user.email},
 })
 
   const handleChange = (e) => {
@@ -95,7 +95,7 @@ async function postData(url = '', data = {}) {
 
 
     console.log(formData);
-    if (formData.fundingType === 'cryptocurrency'&&url!=null) {
+    if (formData.fundingType === 'cryptocurrency' && imageUrl!=null) {
       await createProject()
     }
     else
