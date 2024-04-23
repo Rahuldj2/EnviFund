@@ -1,7 +1,7 @@
-import React, { useContext, useEffect, useState} from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import Web3Modal from "web3modal";
-import { useMoralis,useWeb3Contract } from 'react-moralis';
+import { useMoralis, useWeb3Contract } from 'react-moralis';
 import { ethers } from "ethers";
 import { investorInfoContext } from "./InvestorCardCrypto";
 
@@ -9,19 +9,18 @@ const InvestorProjModal = () => {
     const { account } = useMoralis();
     const project = useContext(investorInfoContext);
     const [fundingAmount, setFundingAmount] = useState("");
-    const[AmountinWei,setAmountinWei]=useState(0);
+    const [AmountinWei, setAmountinWei] = useState(0);
     const [isFundingInputOpen, setIsFundingInputOpen] = useState(false);
-    const[investors,setInvestors]=useState([]);
+    const [investors, setInvestors] = useState([]);
+    const [investorSpecific, setSpecific] = useState({});
 
     useEffect(() => {
-        console.log("amamamama");
         loadInvestorData();
     }, []);
 
-
-    useEffect(() => {  
-        console.log(investors)
-        }, [investors]);
+    useEffect(() => {
+        console.log(investorSpecific)
+    }, [investorSpecific]);
 
     async function loadInvestorData() {
         const web3modal = new Web3Modal();
@@ -30,67 +29,76 @@ const InvestorProjModal = () => {
         const signer = provider.getSigner();
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
         const investors_ret = await contract.getAllInvestorsByProject(project.project_id);
+
+        const investorFundingData = {}; // Object to store investor funding data
+
+        await Promise.all(
+            investors_ret.map(async (investor) => {
+                const investorSpecific = await contract.getInvestorFundingForProject(investor, project.project_id);
+                investorFundingData[investor] = investorSpecific;
+            })
+        );
+
         setInvestors(investors_ret);
-      }
+        setSpecific(investorFundingData);
+    }
 
     const handleFundProject = () => {
         setIsFundingInputOpen(true);
     };
 
     const handleFundingAmountChange = (e) => {
-        
         setFundingAmount(e.target.value);
     };
+    const convertToMatic=(wei)=>{
+        const conversionFactor = 10 ** 18; // 1 Matic = 10^18 Wei
+      return wei / conversionFactor;
+      };
 
-    const {runContractFunction: fundProject}=useWeb3Contract({
-        abi:contractABI,
-        contractAddress:contractAddress,
-        functionName:"fundProject",
-        params:{"_projectId":project.project_id},
-        msgValue:AmountinWei
-    })
+    const { runContractFunction: fundProject } = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "fundProject",
+        params: { "_projectId": project.project_id },
+        msgValue: AmountinWei
+    });
 
+    const { runContractFunction: releaseLockedFunds } = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "releaseLockedFunds",
+        params: { "_projectId": project.project_id },
+    });
 
-    const {runContractFunction: releaseLockedFunds}=useWeb3Contract({
-        abi:contractABI,
-        contractAddress:contractAddress,
-        functionName:"releaseLockedFunds",
-        params:{"_projectId":project.project_id},
-    })
+    const { runContractFunction: withdraw } = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "withdraw",
+        params: { "_projectId": project.project_id },
+    });
 
-    const {runContractFunction: withdraw}=useWeb3Contract({
-        abi:contractABI,
-        contractAddress:contractAddress,
-        functionName:"withdraw",
-        params:{"_projectId":project.project_id},
-    })
-
-
-
-    const handleFundingSubmit = async() => {
-        // Implement the functionality to fund the project using fundingAmount
+    const handleFundingSubmit = async () => {
         console.log("Funding Amount:", fundingAmount);
-        console.log(typeof(fundingAmount))
-        if (project.isCryptoProject)
-        {
-            //invole contract function
-            const fundingInWei = Number(fundingAmount) * 10**18;
+        console.log(typeof (fundingAmount))
+        if (project.isCryptoProject) {
+            const fundingInWei = Number(fundingAmount) * 10 ** 18;
             console.log("Funding Amount in Wei:", fundingInWei);
-            // setFundingAmount(fundingInWei)
             setAmountinWei(fundingInWei)
             await fundProject()
         }
-        // Here you can add logic to fund the project
     };
 
-    const handleReleaseSubmit= async()=>{
+    const handleReleaseSubmit = async () => {
         await releaseLockedFunds();
     }
 
-    const handleWithdrawSubmit= async()=>{
+    const handleWithdrawSubmit = async () => {
         await withdraw();
     }
-    
+
+    const hexToDecimal = (hexString) => {
+        return parseInt(hexString, 16);
+      };    
     return (
         <div className="p-4">
             <h2 className="text-xl font-semibold text-white mb-4">Project Details</h2>
@@ -98,7 +106,6 @@ const InvestorProjModal = () => {
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Project Title:</h3>
                     <p>{project.project_title}</p>
-                    {/* <p>{project.project_id}</p> */}
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Location:</h3>
@@ -141,6 +148,16 @@ const InvestorProjModal = () => {
                         </div>
                     ))}
                 </div>
+
+                <div>
+    {Object.keys(investorSpecific).map((investor) => (
+        <div key={investor}>
+            Investor: {investor}, Amount funded: {convertToMatic(hexToDecimal(investorSpecific[investor][0]._hex))} MATIC, Locked: {convertToMatic(hexToDecimal(investorSpecific[investor][1]._hex))} MATIC
+        </div>
+    ))}
+</div>
+
+
                 <div className="mt-6">
                     <button
                         onClick={handleFundProject}
@@ -164,34 +181,27 @@ const InvestorProjModal = () => {
                         >
                             Fund
                         </button>
-
-                        <div className="mt-4">
-            
-                     </div>
                     </div>
                 )}
-                    <div className="mt-4">
-            <button
-                className="bg-red-500 text-white px-4 py-2 rounded-md text-sm focus:outline-none hover:bg-red-600"
-                onClick={handleWithdrawSubmit}
-            >
-                Withdraw
-            </button>
+                <div className="mt-4">
+                    <button
+                        className="bg-red-500 text-white px-4 py-2 rounded-md text-sm focus:outline-none hover:bg-red-600"
+                        onClick={handleWithdrawSubmit}
+                    >
+                        Withdraw
+                    </button>
 
-            <button
-                onClick={handleReleaseSubmit}
-                className="bg-green-500 text-white px-4 py-2 ml-2 rounded-md text-sm focus:outline-none hover:bg-green-600"
-            >
-                Release
-            </button>
-        </div>
-        <div className="mt-4 text-red-600">
-            Warning: Withdrawing or releasing funds will have permanent effects on the project. Please make sure before proceeding.
-        </div>
-              
+                    <button
+                        onClick={handleReleaseSubmit}
+                        className="bg-green-500 text-white px-4 py-2 ml-2 rounded-md text-sm focus:outline-none hover:bg-green-600"
+                    >
+                        Release
+                    </button>
+                </div>
+                <div className="mt-4 text-red-600">
+                    Warning: Withdrawing or releasing funds will have permanent effects on the project. Please make sure before proceeding.
+                </div>
             </div>
-
-            
         </div>
     );
 };
