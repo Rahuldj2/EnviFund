@@ -22,6 +22,9 @@ const NormalProjectModal = () => {
 
 
 
+    useEffect(() => {
+        console.log(project);
+    }, []);
     const handleFundingSubmit = async() => {
         // Implement the functionality to fund the project using fundingAmount
         
@@ -42,10 +45,6 @@ const NormalProjectModal = () => {
                     <p>{project.location}</p>
                 </div>
                 <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Owner:</h3>
-                    <p>{project.owner}</p>
-                </div>
-                <div className="mb-4">
                     <h3 className="text-lg font-semibold">Funding Goal:</h3>
                     <p>{project.funding_goal} {project.isCryptoProject ? "MATIC" : "INR"}</p>
                 </div>
@@ -54,30 +53,18 @@ const NormalProjectModal = () => {
                     <p>{project.funding_amount} {project.isCryptoProject ? "MATIC" : "INR"}</p>
                 </div>
                 <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Locked Funds:</h3>
-                    <p>{project.locked_funds} {project.isCryptoProject ? "MATIC" : "INR"}</p>
-                </div>
-                <div className="mb-4">
                     <h3 className="text-lg font-semibold">Description:</h3>
-                    <p>{project.Description}</p>
+                    <p>{project.description}</p>
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Owner Email:</h3>
-                    <p>{project.ownerEmail}</p>
+                    <p>{project.project_lead_id}</p>
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Image URL:</h3>
                     <p>{project.imageURL}</p>
                 </div>
 
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Investors:</h3>
-                    {investors.map((investor, index) => (
-                        <div key={index} className="bg-white rounded-lg shadow-md p-6">
-                            <h3 className="text-xl font-semibold mb-2 text-color-black">{investor}</h3>
-                        </div>
-                    ))}
-                </div>
                 <div className="mt-6">
                     <button
                         onClick={handleFundProject}
