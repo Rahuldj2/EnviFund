@@ -45,19 +45,6 @@ const Navbar = () => {
             >
              <span>Dashboard</span> 
             </Link>
-
-            <Link
-              to="/InvestorBoard"
-              spy={true}
-              smooth={true}
-              offset={-70}
-              duration={500}
-              activeClass="active"
-              className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/InvestorBoard")}
-            >
-              My Investments
-            </Link>
             
             <Link
               to="profile"
