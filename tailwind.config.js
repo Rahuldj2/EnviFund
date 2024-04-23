@@ -23,7 +23,9 @@ module.exports = {
         grootLightGreen: '#1dcfab',
         grootGreen: '#07c484',
         grootRed: '#ce4343',
-        grootBrown: '#d2af88'
+        grootBrown: '#d2af88',
+        themeWhite: '#FFFFFF', // Add themeWhite color
+        themeBlueLight: '#94C0D5', // Add themeBlueLight color
       },
     },
     fontFamily: {
