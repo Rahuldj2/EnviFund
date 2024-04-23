@@ -2,29 +2,31 @@ import React, { useContext, useEffect, useState} from "react";
 import { projectInfoContext } from './ProjectCardCrypto';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import Web3Modal from "web3modal";
-import { useMoralis,useWeb3Contract } from 'react-moralis';
+import { useMoralis, useWeb3Contract } from 'react-moralis';
 import { ethers } from "ethers";
 import { normalprojectcontext } from "./ProjectCard";
+
 const ProjectDetailsModal = () => {
     const { account } = useMoralis();
     const project = useContext(projectInfoContext);
-    const normalproject=useContext(normalprojectcontext);
+    const normalproject = useContext(normalprojectcontext);
     const [fundingAmount, setFundingAmount] = useState("");
-    const[AmountinWei,setAmountinWei]=useState(0);
+    const [AmountinWei, setAmountinWei] = useState(0);
     const [isFundingInputOpen, setIsFundingInputOpen] = useState(false);
-    const[investors,setInvestors]=useState([]);
-
+    const [investors, setInvestors] = useState([]);
     const [investorSpecific, setSpecific] = useState({});
+    const [updateText, setUpdateText] = useState("");
+    const [updateImage, setUpdateImage] = useState(null);
+    const[updateOpen,setUpdateOpen]=useState(false);
 
     useEffect(() => {
         console.log("amamamama");
         loadInvestorData();
     }, []);
 
-
     useEffect(() => {  
         console.log(investors)
-        }, [investors]);
+    }, [investors]);
 
     async function loadInvestorData() {
         const web3modal = new Web3Modal();
@@ -44,52 +46,78 @@ const ProjectDetailsModal = () => {
         );
         setInvestors(investors_ret);
         setSpecific(investorFundingData);
-      }
+    }
 
     const handleFundProject = () => {
         setIsFundingInputOpen(true);
     };
 
-    const convertToMatic=(wei)=>{
+    const convertToMatic = (wei) => {
         const conversionFactor = 10 ** 18; // 1 Matic = 10^18 Wei
-      return wei / conversionFactor;
-      };
+        return wei / conversionFactor;
+    };
 
     const handleFundingAmountChange = (e) => {
-        
         setFundingAmount(e.target.value);
     };
 
+    const handleUpdateProject = () => {
+        setUpdateOpen(!updateOpen);
+    }
+
+    const handleUpdateTextChange = (e) => {
+        setUpdateText(e.target.value);
+    };
+
+    const handleUpdateImageChange = (e) => {
+        setUpdateImage(e.target.files[0]);
+    };
 
     const hexToDecimal = (hexString) => {
         return parseInt(hexString, 16);
-      };    
-    const {runContractFunction: fundProject}=useWeb3Contract({
-        abi:contractABI,
-        contractAddress:contractAddress,
-        functionName:"fundProject",
-        params:{"_projectId":project.project_id},
-        msgValue:AmountinWei
-    })
+    };    
 
+    const {runContractFunction: fundProject} = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "fundProject",
+        params: {"_projectId": project.project_id},
+        msgValue: AmountinWei
+    });
 
+    const {runContractFunction: giveUpdate} = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "giveUpdate",
+        params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":"test url"},
+    });
 
-    const handleFundingSubmit = async() => {
-        // Implement the functionality to fund the project using fundingAmount
+    const handleFundingSubmit = async () => {
         console.log("Funding Amount:", fundingAmount);
         console.log(typeof(fundingAmount))
-        if (project.isCryptoProject)
-        {
-            //invole contract function
+        if (project.isCryptoProject) {
             const fundingInWei = Number(fundingAmount) * 10**18;
             console.log("Funding Amount in Wei:", fundingInWei);
-            // setFundingAmount(fundingInWei)
             setAmountinWei(fundingInWei)
             await fundProject()
         }
-        // Here you can add logic to fund the project
     };
     
+    const handleUpdateSubmit = async () => {
+        // Implement the functionality to fund the project using fundingAmount
+        console.log("Update Text:", updateText);
+        console.log("Update Image:", updateImage);
+            // Convert the text and image to bytes
+        await giveUpdate().then((result) => {
+            console.log(result);
+        });
+        console.log("hello")
+
+        
+        // Here you can add logic to fund the project
+    };
+
+
     return (
         <div className="p-4">
             <h2 className="text-xl font-semibold text-white mb-4">Project Details</h2>
@@ -97,7 +125,6 @@ const ProjectDetailsModal = () => {
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Project Title:</h3>
                     <p>{project.project_title}</p>
-                    {/* <p>{project.project_id}</p> */}
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Location:</h3>
@@ -142,12 +169,13 @@ const ProjectDetailsModal = () => {
                 </div>
 
                 <div>
-                {Object.keys(investorSpecific).map((investor) => (
-                    <div key={investor}>
-                        Investor: {investor}, Amount funded: {convertToMatic(hexToDecimal(investorSpecific[investor][0]._hex))} MATIC, Locked: {convertToMatic(hexToDecimal(investorSpecific[investor][1]._hex))} MATIC
-                    </div>
-                ))}
-            </div>
+                    {Object.keys(investorSpecific).map((investor) => (
+                        <div key={investor}>
+                            Investor: {investor}, Amount funded: {convertToMatic(hexToDecimal(investorSpecific[investor][0]._hex))} MATIC, Locked: {convertToMatic(hexToDecimal(investorSpecific[investor][1]._hex))} MATIC
+                        </div>
+                    ))}
+                </div>
+                
                 <div className="mt-6">
                     <button
                         onClick={handleFundProject}
@@ -156,12 +184,22 @@ const ProjectDetailsModal = () => {
                         Fund Project
                     </button>
                 </div>
+
+                <div className="mt-6">
+                    <button
+                        onClick={handleUpdateProject}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm focus:outline-none hover:bg-blue-600"
+                    >
+                        Provide Updates
+                    </button>
+                </div>
+
                 {isFundingInputOpen && (
                     <div className="mt-4">
                         <input
                             type="number"
                             className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter Amount(in MATIC or INR as per project requirement)"
+                            placeholder="Enter Amount (in MATIC or INR as per project requirement)"
                             value={fundingAmount}
                             onChange={handleFundingAmountChange}
                         />
@@ -173,6 +211,37 @@ const ProjectDetailsModal = () => {
                         </button>
                     </div>
                 )}
+
+                {
+                    updateOpen && (
+                        <div className="mt4">
+
+                    <h3 className="text-lg font-semibold mt-4">Update</h3>
+                        <textarea
+                            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter Update Text"
+                            value={updateText}
+                            onChange={handleUpdateTextChange}
+                        />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="border border-gray-300 rounded-md px-4 py-2 mt-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={handleUpdateImageChange}
+                        />
+                        <button
+                            onClick={handleUpdateSubmit}
+                            className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-md text-sm focus:outline-none hover:bg-blue-600"
+                        >
+                            Submit Update
+                        </button>
+ 
+                        </div>
+
+                    )
+                }
+
+
             </div>
         </div>
     );
