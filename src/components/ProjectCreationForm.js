@@ -95,7 +95,7 @@ async function postData(url = '', data = {}) {
 
 
     console.log(formData);
-    if (formData.fundingType === 'cryptocurrency'&&url!=null) {
+    if (formData.fundingType === 'cryptocurrency') {
       await createProject()
     }
     else
