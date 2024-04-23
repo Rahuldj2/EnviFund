@@ -2,6 +2,7 @@ import React,{ useState } from 'react';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import { ethers } from 'ethers';
 import Web3Modal from "web3modal";
+import supabase from '../pages/api/dbConnection/dbConnect';
 import { useSession } from 'next-auth/react';
 import { useMoralis,useWeb3Contract } from 'react-moralis';
 const ProjectCreationForm = () => {
@@ -14,9 +15,10 @@ const ProjectCreationForm = () => {
     imageFile: null,
   });
 
+  const[imageUrl ,setImageUrl]=useState(null);
   // const { account, Moralis } = useMoralis();
   const { data: session, status } = useSession()
-
+const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_images/"
   const {runContractFunction: createProject}=useWeb3Contract({
     abi:contractABI,
     contractAddress:contractAddress,
@@ -29,17 +31,55 @@ const ProjectCreationForm = () => {
     const { name,value } = e.target;
     setFormData({ ...formData,[name]: value });
   };
+ 
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    setFormData({ ...formData,imageFile: file });
+
+
+  
+  const handleImageChange = async (e) => {
+    try {
+      let file = e.target.files[0];
+    
+      const { data, error } = await supabase.storage
+        .from('projectimages')
+        .upload(`project_images/${formData.projectTitle}/${file.name}`, file);
+  
+      if (error) {
+        throw error;
+      }
+  
+      if (data) {
+        console.log("Image uploaded:", data);
+        
+    const url = BASEURL+formData.projectTitle+"/"+file.name;
+    setImageUrl(url);
+      
+    console.log("Image URL:", url);
+      }
+  
+      setFormData({ ...formData, imageFile: file });
+    } catch (error) {
+      console.error("Error handling image change:", error);
+      // Handle error (e.g., display error message to the user)
+    }
   };
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     // Handle form submission (e.g., send data to backend)
+
+
+
+  if (getUrlError) {
+    throw getUrlError;
+  } 
+
+
+  console.log("Image URL:", url);
+
+
     console.log(formData);
-    if (formData.fundingType === 'cryptocurrency') {
+    if (formData.fundingType === 'cryptocurrency'&&url!=null) {
       await createProject()
     }
     else
