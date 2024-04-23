@@ -20,7 +20,13 @@ const ProjectDetailsModal = () => {
     const [updateImage, setUpdateImage] = useState(null);
     const [ImageupdateUrl, setUpdateImageUrl] = useState(null);
     const[updateOpen,setUpdateOpen]=useState(false);
+
     const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_update_images/"
+
+
+    const[ImageURL,setImageUrl]=useState(null);
+
+
     useEffect(() => {
         console.log("amamamama");
         loadInvestorData();
@@ -113,11 +119,14 @@ const ProjectDetailsModal = () => {
         msgValue: AmountinWei
     });
 
+
     const {runContractFunction: giveUpdate} = useWeb3Contract({
         abi: contractABI,
         contractAddress: contractAddress,
         functionName: "giveUpdate",
+
         params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":ImageupdateUrl},
+
     });
 
     const handleFundingSubmit = async () => {
@@ -137,12 +146,14 @@ const ProjectDetailsModal = () => {
         console.log("Update Image:", updateImage);
             // Convert the text and image to bytes
 
+
             if(ImageupdateUrl!=null){
                 await giveUpdate().then((result) => {
                     console.log(result);
                 });
             }
        
+
         console.log("hello")
 
         

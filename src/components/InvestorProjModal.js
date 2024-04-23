@@ -173,7 +173,7 @@ const InvestorProjModal = () => {
                                         <img src={update[1]}  className="w-64 h-32 object-cover mb-2" />
             
                                     </div>
-                                    
+
                                 ))}
                             </div>
                         )}
