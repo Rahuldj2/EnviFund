@@ -2,17 +2,18 @@ import React,{ useEffect,useState } from 'react';
 import CountUp from 'react-countup';
 import { useRouter } from 'next/router';
 import { useSession } from 'next-auth/react';
-// import { fetchDashboardData } from '../api'; // Import API function
+// import fetchDashboardDetails from '../api/project/fetch-dashboard-details'; // Import API function
+import fetchDashboardDetails from '../pages/api/project/fetch-dashboard-details'; // Import API function
 
 const Dashboard = () => {
     const { data: session } = useSession();
     const router = useRouter();
 
     // State variables to store project and investment counts
-    const [projectsCount,setProjectsCount] = useState(20);
-    const [investmentsCount,setInvestmentsCount] = useState(30);
-    const [totalMoneyRaised,setTotalMoneyRaised] = useState(3000);
-    const [totalMoneyInvested,setTotalMoneyInvested] = useState(5000);
+    const [projectsCount,setProjectsCount] = useState(0);
+    const [investmentsCount,setInvestmentsCount] = useState(0);
+    const [totalMoneyRaised,setTotalMoneyRaised] = useState(0);
+    const [totalMoneyInvested,setTotalMoneyInvested] = useState(0);
 
     // Fetch data from API when component mounts
     useEffect(() => {
@@ -22,20 +23,20 @@ const Dashboard = () => {
             return;
         }
 
-        // Fetch dashboard data from API
-        // const fetchData = async () => {
-        //     try {
-        //         const response = await fetchDashboardData(session.user.email);
-        //         setProjectsCount(response.no_of_projects);
-        //         setInvestmentsCount(response.no_of_investments);
-        //         setTotalMoneyRaised(response.total_money_raised);
-        //         setTotalMoneyInvested(response.total_money_invested);
-        //     } catch (error) {
-        //         console.error('Error fetching dashboard data:', error);
-        //     }
-        // };
+        const fetchData = async () => {
+            try {
+                // Call the API function to fetch dashboard details
+                const response = await fetchDashboardDetails({ investor_id: session.user.id });
+                setProjectsCount(response.totalProjects);
+                setInvestmentsCount(response.totalInvestments);
+                setTotalMoneyRaised(response.totalAmountRaised);
+                setTotalMoneyInvested(response.totalInvestedAmount);
+            } catch (error) {
+                console.error('Error fetching dashboard data:',error);
+            }
+        };
 
-        // fetchData();
+        fetchData();
     },[session,router]);
 
     return (
