@@ -8,6 +8,7 @@ import ProjectCreationForm from "@/components/ProjectCreationForm";
 
 const GetMyProjects = () => {
   const [projects, setProjects] = useState([]);
+
   const { account } = useMoralis();
   const { data: session } = useSession();
   const [showProjectForm, setShowProjectForm] = useState(false);
@@ -19,6 +20,15 @@ const GetMyProjects = () => {
     }
   }, [account,projects]);
 
+  useEffect(() => {
+   
+    if(session){
+      loadCurrencyData();
+    }
+        
+    
+      
+    }, [session]);
 
   //Function to load the data from blockchain
   async function loadData() {
@@ -30,6 +40,10 @@ const GetMyProjects = () => {
     const Projs = await contract.getAllProjectsByOwner(account);
     setProjects(Projs);
   }
+
+
+
+
 
   // Function to convert hexadecimal string to decimal
   const hexToDecimal = (hexString) => {

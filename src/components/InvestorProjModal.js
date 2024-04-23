@@ -169,7 +169,11 @@ const InvestorProjModal = () => {
                                 {updates.map((update, index) => (
                                     <div key={index} className="bg-white rounded-lg shadow-md p-6">
                                         {update[0]}
+
+                                        <img src={update[1]}  className="w-64 h-32 object-cover mb-2" />
+            
                                     </div>
+                                    
                                 ))}
                             </div>
                         )}

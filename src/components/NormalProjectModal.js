@@ -215,7 +215,7 @@ async function postData(url = '', data = {}) {
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Image URL:</h3>
-                    <p>{project.imageURL}</p>
+                    <p>{project.image}</p>
                 </div>
 
 
