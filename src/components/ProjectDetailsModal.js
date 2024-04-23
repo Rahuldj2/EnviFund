@@ -3,6 +3,7 @@ import { projectInfoContext } from './ProjectCardCrypto';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import Web3Modal from "web3modal";
 import { useMoralis, useWeb3Contract } from 'react-moralis';
+import supabase from '../pages/api/dbConnection/dbConnect';
 import { ethers } from "ethers";
 import { normalprojectcontext } from "./ProjectCard";
 
@@ -17,9 +18,14 @@ const ProjectDetailsModal = () => {
     const [investorSpecific, setSpecific] = useState({});
     const [updateText, setUpdateText] = useState("");
     const [updateImage, setUpdateImage] = useState(null);
+    const [ImageupdateUrl, setUpdateImageUrl] = useState(null);
     const[updateOpen,setUpdateOpen]=useState(false);
 
+    const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_update_images/"
+
+
     const[ImageURL,setImageUrl]=useState(null);
+
 
     useEffect(() => {
         console.log("amamamama");
@@ -71,10 +77,36 @@ const ProjectDetailsModal = () => {
         setUpdateText(e.target.value);
     };
 
-    const handleUpdateImageChange = (e) => {
-        setUpdateImage(e.target.files[0]);
-    };
+ 
 
+    const handleUpdateImageChange = async (e) => {
+        try {
+          let file = e.target.files[0];
+          setUpdateImage(e.target.files[0]);
+          const { data, error } = await supabase.storage
+            .from('projectimages')
+            .upload(`project_update_images/${updateText}/${file.name}`, file);
+      
+          if (error) {
+            throw error;
+          }
+      
+          if (data) {
+            console.log("Image uploaded:", data);
+            
+        const url = BASEURL+updateText+"/"+file.name;
+        setUpdateImageUrl(url);
+
+          
+        console.log("Image URL:", url);
+          }
+      
+        
+        } catch (error) {
+          console.error("Error handling image change:", error);
+          // Handle error (e.g., display error message to the user)
+        }
+      };
     const hexToDecimal = (hexString) => {
         return parseInt(hexString, 16);
     };    
@@ -92,7 +124,9 @@ const ProjectDetailsModal = () => {
         abi: contractABI,
         contractAddress: contractAddress,
         functionName: "giveUpdate",
-        params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":ImageURL},
+
+        params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":ImageupdateUrl},
+
     });
 
     const handleFundingSubmit = async () => {
@@ -112,13 +146,14 @@ const ProjectDetailsModal = () => {
         console.log("Update Image:", updateImage);
             // Convert the text and image to bytes
 
-        if (ImageURL!=null)
-        {
-            
-        await giveUpdate().then((result) => {
-            console.log(result);
-        });
-        }
+
+            if(ImageupdateUrl!=null){
+                await giveUpdate().then((result) => {
+                    console.log(result);
+                });
+            }
+       
+
         console.log("hello")
 
         
@@ -162,11 +197,12 @@ const ProjectDetailsModal = () => {
                     <h3 className="text-lg font-semibold">Owner Email:</h3>
                     <p>{project.ownerEmail}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Image URL:</h3>
-                    <p>{project.imageURL}</p>
-                </div>
-                  
+                {project.imageURL && (
+                    <div className="mb-4">
+                        <h3 className="text-lg font-semibold">Image:</h3>
+                        <img src={project.imageURL} alt="Project Image" className="w-full h-48 object-cover mb-2" />
+                    </div>
+                )}
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Investors:</h3>
                     {investors.map((investor, index) => (
@@ -175,7 +211,6 @@ const ProjectDetailsModal = () => {
                         </div>
                     ))}
                 </div>
-
                 <div>
                     {Object.keys(investorSpecific).map((investor) => (
                         <div key={investor}>
@@ -183,7 +218,6 @@ const ProjectDetailsModal = () => {
                         </div>
                     ))}
                 </div>
-                
                 <div className="mt-6">
                     <button
                         onClick={handleFundProject}
@@ -192,7 +226,6 @@ const ProjectDetailsModal = () => {
                         Fund Project
                     </button>
                 </div>
-
                 <div className="mt-6">
                     <button
                         onClick={handleUpdateProject}
@@ -201,7 +234,6 @@ const ProjectDetailsModal = () => {
                         Provide Updates
                     </button>
                 </div>
-
                 {isFundingInputOpen && (
                     <div className="mt-4">
                         <input
@@ -219,12 +251,9 @@ const ProjectDetailsModal = () => {
                         </button>
                     </div>
                 )}
-
-                {
-                    updateOpen && (
-                        <div className="mt4">
-
-                    <h3 className="text-lg font-semibold mt-4">Update</h3>
+                {updateOpen && (
+                    <div className="mt4">
+                        <h3 className="text-lg font-semibold mt-4">Update</h3>
                         <textarea
                             className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                             placeholder="Enter Update Text"
@@ -243,16 +272,10 @@ const ProjectDetailsModal = () => {
                         >
                             Submit Update
                         </button>
- 
-                        </div>
-
-                    )
-                }
-
-
+                    </div>
+                )}
             </div>
         </div>
     );
-};
-
+}
 export default ProjectDetailsModal;
