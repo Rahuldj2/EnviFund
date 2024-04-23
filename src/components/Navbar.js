@@ -42,38 +42,48 @@ const Navbar = () => {
               duration={500}
               activeClass="active"
               className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/MyProjects")}
+              onClick={() => router.push("/")}
             >
               Dashboard
             </Link>
 
-
             <Link
-              to="/BrowseProjects"
+              to="projects"
               spy={true}
               smooth={true}
               offset={-70}
               duration={500}
               activeClass="active"
               className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/BrowseProjects")}
+              onClick={() => router.push("/")}
+            >
+              My Projects
+            </Link>
+
+            <Link
+              to="browse"
+              spy={true}
+              smooth={true}
+              offset={-70}
+              duration={500}
+              activeClass="active"
+              className="text-xl font-bold hover:underline cursor-pointer"
             >
               Browse
             </Link>
 
             <Link
-              to="/InvestorBoard"
+              to="investments"
               spy={true}
               smooth={true}
               offset={-70}
               duration={500}
               activeClass="active"
               className="text-xl font-bold hover:underline cursor-pointer"
-              onClick={() => router.push("/InvestorBoard")}
+              onClick={() => router.push("/")}
             >
               My Investments
             </Link>
-            {/* Add links for other sections */}
           </>
         ) : (
           <>
