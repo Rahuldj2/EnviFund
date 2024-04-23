@@ -24,16 +24,33 @@ const Dashboard = () => {
         }
 
         const fetchData = async () => {
-            try {
-                // Call the API function to fetch dashboard details
-                const response = await fetchDashboardDetails({ investor_id: session.user.id });
-                setProjectsCount(response.totalProjects);
-                setInvestmentsCount(response.totalInvestments);
-                setTotalMoneyRaised(response.totalAmountRaised);
-                setTotalMoneyInvested(response.totalInvestedAmount);
+            try{
+                console.log(session?.user.email)
+              const response = await fetch(`/api/project/fetch-dashboard-details?investor_id=${session?.user.email}`);
+              console.log("dash"+response)
+              if (!response.ok) {
+                throw new Error('Failed to fetch projects');
+              }
+              const data = await response.json();
+              
+             
+                setProjectsCount(data.totalProjects);
+                setInvestmentsCount(data.totalInvestments);
+                setTotalMoneyRaised(data.totalAmountRaised);
+                setTotalMoneyInvested(data.totalInvestedAmount);
             } catch (error) {
-                console.error('Error fetching dashboard data:',error);
+              console.error('Error fetching projects:', error);
             }
+            // try {
+            //     // Call the API function to fetch dashboard details
+     
+            //     setProjectsCount(response.totalProjects);
+            //     setInvestmentsCount(response.totalInvestments);
+            //     setTotalMoneyRaised(response.totalAmountRaised);
+            //     setTotalMoneyInvested(response.totalInvestedAmount);
+            // } catch (error) {
+            //     console.error('Error fetching dashboard data:',error);
+            // }
         };
 
         fetchData();
