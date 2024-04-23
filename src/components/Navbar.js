@@ -1,13 +1,13 @@
 import React from "react";
-import { useSession, signIn, signOut } from "next-auth/react";
+import { useSession,signIn,signOut } from "next-auth/react";
 import Image from "next/image";
 import { Link } from "react-scroll";
-import { useEffect, useState } from "react";
+import { useEffect,useState } from "react";
 import { useRouter } from "next/router";
 
 const Navbar = () => {
   const { data: session } = useSession();
-  const [scrolling, setScrolling] = useState(false);
+  const [scrolling,setScrolling] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
@@ -19,18 +19,17 @@ const Navbar = () => {
       }
     };
 
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll",handleScroll);
 
     return () => {
-      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll",handleScroll);
     };
-  }, []);
+  },[]);
 
   return (
     <nav
-      className={`flex justify-between items-center py-4 px-8 text-white sticky top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue ${
-        scrolling ? "opacity-90" : ""
-      }`}
+      className={`flex justify-between items-center py-4 px-8 text-white sticky top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue ${scrolling ? "opacity-90" : ""
+        }`}
     >
       <div className="flex items-center space-x-8">
         {session ? (
@@ -73,18 +72,6 @@ const Navbar = () => {
               onClick={() => router.push("/InvestorBoard")}
             >
               My Investments
-            </Link>
-            
-            <Link
-              to="profile"
-              spy={true}
-              smooth={true}
-              offset={-100}
-              duration={500}
-              activeClass="active"
-              className="text-xl font-bold hover:underline"
-            >
-              Profile
             </Link>
             {/* Add links for other sections */}
           </>
@@ -131,17 +118,27 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {session ? (
           <div className="flex items-center space-x-4">
-            <p>{session.user.name}</p>
-            <div className="w-10 h-10 relative">
-              <Image
-                src={session.user.image}
-                alt={session.user.name}
-                layout="fill" // required
-                objectFit="cover" // change to suit your needs
-                className="rounded-full"
-              />
-            </div>
-
+            <Link
+              to="profile"
+              spy={true}
+              smooth={true}
+              offset={-100}
+              duration={500}
+              activeClass="active"
+              className="hover:underline flex items-center space-x-4"
+            >
+              <p>{session.user.name}</p>
+              <div className="w-12 h-12 relative">
+                {/* Profile */}
+                <Image
+                  src={session.user.image}
+                  alt={session.user.name}
+                  layout="fill" // required
+                  objectFit="cover" // change to suit your needs
+                  className="rounded-full"
+                />
+              </div>
+            </Link>
             <button
               onClick={() => signOut()}
               className="bg-white text-blue-500 px-4 py-2 rounded-md text-sm"
