@@ -170,6 +170,7 @@ const InvestorProjModal = () => {
                                     <div key={index} className="bg-white rounded-lg shadow-md p-6">
                                         {update[0]}
                                     </div>
+                                    //update[1] will have the image URL
                                 ))}
                             </div>
                         )}

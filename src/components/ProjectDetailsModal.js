@@ -19,6 +19,8 @@ const ProjectDetailsModal = () => {
     const [updateImage, setUpdateImage] = useState(null);
     const[updateOpen,setUpdateOpen]=useState(false);
 
+    const[ImageURL,setImageUrl]=useState(null);
+
     useEffect(() => {
         console.log("amamamama");
         loadInvestorData();
@@ -85,11 +87,12 @@ const ProjectDetailsModal = () => {
         msgValue: AmountinWei
     });
 
+
     const {runContractFunction: giveUpdate} = useWeb3Contract({
         abi: contractABI,
         contractAddress: contractAddress,
         functionName: "giveUpdate",
-        params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":"test url"},
+        params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":ImageURL},
     });
 
     const handleFundingSubmit = async () => {
@@ -108,9 +111,14 @@ const ProjectDetailsModal = () => {
         console.log("Update Text:", updateText);
         console.log("Update Image:", updateImage);
             // Convert the text and image to bytes
+
+        if (ImageURL!=null)
+        {
+            
         await giveUpdate().then((result) => {
             console.log(result);
         });
+        }
         console.log("hello")
 
         
