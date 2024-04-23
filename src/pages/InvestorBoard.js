@@ -1,4 +1,4 @@
-// pages/MyProjects.js
+// pages/MyInvestments.js
 import React,{ useState,useEffect } from 'react';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -16,7 +16,7 @@ import { useSession } from "next-auth/react";
 
 import InvestorCardCrypto from '@/components/InvestorCardCrypto';
 
-const MyProjects = () => {
+const MyInvestments = () => {
   const [isPaneOpen,setIsPaneOpen] = useState(false);
 
   const [cryptoprojects, setProjects] = useState([]);
@@ -110,7 +110,7 @@ async function loadCurrencyData(){
   );
 };
 
-export default MyProjects;
+export default MyInvestments;
 
 
 // const cryptoprojects = [

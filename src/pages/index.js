@@ -7,6 +7,7 @@ import MyProjects from "./MyProjects";
 import { useRouter } from "next/router";
 import Dashboard from "./dashboard";
 import AllProjects from "./BrowseProjects";
+import MyInvestments from "./InvestorBoard";
 
 const Home = () => {
   const { data: session } = useSession();
@@ -48,6 +49,7 @@ const Home = () => {
             </div>
             <div id="investments" className="min-h-screen">
               {/* Investments content */}
+              <MyInvestments />
             </div>
           </>
         ) : (
