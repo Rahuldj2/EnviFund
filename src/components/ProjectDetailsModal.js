@@ -14,6 +14,8 @@ const ProjectDetailsModal = () => {
     const [isFundingInputOpen, setIsFundingInputOpen] = useState(false);
     const[investors,setInvestors]=useState([]);
 
+    const [investorSpecific, setSpecific] = useState({});
+
     useEffect(() => {
         console.log("amamamama");
         loadInvestorData();
@@ -31,18 +33,37 @@ const ProjectDetailsModal = () => {
         const signer = provider.getSigner();
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
         const investors_ret = await contract.getAllInvestorsByProject(project.project_id);
+
+        const investorFundingData = {}; 
+
+        await Promise.all(
+            investors_ret.map(async (investor) => {
+                const investorSpecific = await contract.getInvestorFundingForProject(investor, project.project_id);
+                investorFundingData[investor] = investorSpecific;
+            })
+        );
         setInvestors(investors_ret);
+        setSpecific(investorFundingData);
       }
 
     const handleFundProject = () => {
         setIsFundingInputOpen(true);
     };
 
+    const convertToMatic=(wei)=>{
+        const conversionFactor = 10 ** 18; // 1 Matic = 10^18 Wei
+      return wei / conversionFactor;
+      };
+
     const handleFundingAmountChange = (e) => {
         
         setFundingAmount(e.target.value);
     };
 
+
+    const hexToDecimal = (hexString) => {
+        return parseInt(hexString, 16);
+      };    
     const {runContractFunction: fundProject}=useWeb3Contract({
         abi:contractABI,
         contractAddress:contractAddress,
@@ -110,7 +131,7 @@ const ProjectDetailsModal = () => {
                     <h3 className="text-lg font-semibold">Image URL:</h3>
                     <p>{project.imageURL}</p>
                 </div>
-
+                  
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Investors:</h3>
                     {investors.map((investor, index) => (
@@ -119,6 +140,14 @@ const ProjectDetailsModal = () => {
                         </div>
                     ))}
                 </div>
+
+                <div>
+                {Object.keys(investorSpecific).map((investor) => (
+                    <div key={investor}>
+                        Investor: {investor}, Amount funded: {convertToMatic(hexToDecimal(investorSpecific[investor][0]._hex))} MATIC, Locked: {convertToMatic(hexToDecimal(investorSpecific[investor][1]._hex))} MATIC
+                    </div>
+                ))}
+            </div>
                 <div className="mt-6">
                     <button
                         onClick={handleFundProject}

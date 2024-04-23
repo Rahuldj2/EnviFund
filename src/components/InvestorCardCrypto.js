@@ -91,6 +91,7 @@ const InvestorCardCrypto= ({ project,funding_type,onClick}) => {
                     />
                     <div className="absolute top-1/2 transform -translate-y-1/2 left-1/2 -translate-x-1/2 text-2xl text-gray-800">
                         {progress.toPrecision(3)}%
+                        
                     </div>
                 </div>
             </div>
