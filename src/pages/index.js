@@ -1,15 +1,31 @@
-import React from "react";
-import { useSession,signIn } from "next-auth/react";
+import React, { useEffect } from "react";
+import { useSession, signIn } from "next-auth/react";
 import Welcome from "@/components/Welcome";
 import Initiatives from "./Initiatives";
 import About from "./About";
 import MyProjects from "./MyProjects";
+import { useRouter } from "next/router";
 
 const Home = () => {
   const { data: session } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkUserExists = async () => {
+      console.log("here")
+      if (session) {
+        const response = await fetch(`/api/sign-up/check-if-user-exists?email_id=${session.user.email}`);
+        const data = await response.json();
+        if (!data.exists) {
+          router.push("/signup"); // Redirect to signup form if user doesn't exist
+        }
+      }
+    };
+
+    checkUserExists();
+  }, [session, router]);
 
   const handleSignIn = async () => {
-    // Use the signIn function to initiate the Google authentication
     await signIn("google");
   };
 

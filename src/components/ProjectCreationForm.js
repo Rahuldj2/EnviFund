@@ -34,6 +34,24 @@ const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/publi
  
 
 
+// Assuming you're using fetch API for making HTTP requests
+
+// Function to post data to the server
+async function postData(url = '', data = {}) {
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  });
+  return response.json();
+}
+
+
+
+
+
 
   
   const handleImageChange = async (e) => {
@@ -70,12 +88,10 @@ const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/publi
 
 
 
-  if (getUrlError) {
-    throw getUrlError;
-  } 
+ 
 
 
-  console.log("Image URL:", url);
+  // console.log("Image URL:", url);
 
 
     console.log(formData);
@@ -85,6 +101,33 @@ const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/publi
     else
     {
       //send data to database
+
+      // URL to your server endpoint
+const url = '/api/project/add-new-project'; // Adjust the URL according to your endpoint
+
+const projectData ={
+  project_title: formData.projectTitle,
+  description:formData.projectDescription,
+  location: formData.location,
+  completed: false,
+  funding_type: formData.fundingType,
+  funding_goal: formData.fundingGoal,
+  funding_amount: 0,
+  funding_goal_reached: false,
+  project_lead_id:session?.user.email ,
+  images: [imageUrl]
+}
+
+// Call the postData function with the URL and projectData
+postData(url, projectData)
+  .then(data => {
+    console.log('Success:', data);
+    // Handle success response here
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    // Handle error response here
+  });
       //api call
     }
     // Reset form fields
