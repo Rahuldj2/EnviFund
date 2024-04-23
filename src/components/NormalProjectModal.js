@@ -1,38 +1,14 @@
 import React, { useContext, useEffect, useState} from "react";
-import { projectInfoContext } from './ProjectCardCrypto';
-import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
-import Web3Modal from "web3modal";
-import { useMoralis,useWeb3Contract } from 'react-moralis';
-import { ethers } from "ethers";
 import { normalprojectcontext } from "./ProjectCard";
-const ProjectDetailsModal = () => {
-    const { account } = useMoralis();
-    const project = useContext(projectInfoContext);
-    const normalproject=useContext(normalprojectcontext);
+const NormalProjectModal = () => {
+    // const project = useContext(projectInfoContext);
+    const project=useContext(normalprojectcontext);
     const [fundingAmount, setFundingAmount] = useState("");
     const[AmountinWei,setAmountinWei]=useState(0);
     const [isFundingInputOpen, setIsFundingInputOpen] = useState(false);
     const[investors,setInvestors]=useState([]);
 
-    useEffect(() => {
-        console.log("amamamama");
-        loadInvestorData();
-    }, []);
-
-
-    useEffect(() => {  
-        console.log(investors)
-        }, [investors]);
-
-    async function loadInvestorData() {
-        const web3modal = new Web3Modal();
-        const connection = await web3modal.connect();
-        const provider = new ethers.providers.Web3Provider(connection);
-        const signer = provider.getSigner();
-        const contract = new ethers.Contract(contractAddress, contractABI, signer);
-        const investors_ret = await contract.getAllInvestorsByProject(project.project_id);
-        setInvestors(investors_ret);
-      }
+    
 
     const handleFundProject = () => {
         setIsFundingInputOpen(true);
@@ -43,29 +19,12 @@ const ProjectDetailsModal = () => {
         setFundingAmount(e.target.value);
     };
 
-    const {runContractFunction: fundProject}=useWeb3Contract({
-        abi:contractABI,
-        contractAddress:contractAddress,
-        functionName:"fundProject",
-        params:{"_projectId":project.project_id},
-        msgValue:AmountinWei
-    })
 
 
 
     const handleFundingSubmit = async() => {
         // Implement the functionality to fund the project using fundingAmount
-        console.log("Funding Amount:", fundingAmount);
-        console.log(typeof(fundingAmount))
-        if (project.isCryptoProject)
-        {
-            //invole contract function
-            const fundingInWei = Number(fundingAmount) * 10**18;
-            console.log("Funding Amount in Wei:", fundingInWei);
-            // setFundingAmount(fundingInWei)
-            setAmountinWei(fundingInWei)
-            await fundProject()
-        }
+        
         // Here you can add logic to fund the project
     };
     
@@ -149,4 +108,4 @@ const ProjectDetailsModal = () => {
     );
 };
 
-export default ProjectDetailsModal;
+export default NormalProjectModal;

@@ -3,6 +3,14 @@ import ProgressBar from "react-customizable-progressbar";
 import Image from "next/image";
 import EthereumLogo from "/public/icons/icons8-ethereum-logo-128.png";
 import RupeeLogo from "/public/icons/icons8-rupee-100.png";
+import { useState,createContext } from "react";
+import SlidingPane from 'react-sliding-pane';
+import ProjectDetailsModal from "@/components/ProjectDetailsModal";
+import NormalProjectModal from "./NormalProjectModal";
+export const normalprojectcontext = createContext();
+
+
+
 
 const ProjectCard = ({ project }) => {
     const {
@@ -16,8 +24,24 @@ const ProjectCard = ({ project }) => {
     const isCryptoProject = funding_type === "cryptocurrency";
     const progress = (funding_amount / funding_goal) * 100;
 
+    const[isOpen,setOpen]=useState(false);
+
+    function handleProjectClick(project) {
+        setOpen(true);
+        // loadInvestorData();
+        // console.log(investors);
+    }
+
+    
+    const handleClose= () => {
+        setOpen(false);
+      };
+
     return (
-        <div className={`flex flex-col relative bg-white rounded-lg shadow-md mb-6 border-y-8 ${isCryptoProject ? "border-blue-500" : "border-yellow-500"} justify-start min-w-min cursor-pointer transition-transform hover:scale-105 transform-gpu hover:shadow-xl`}>
+        <normalprojectcontext.Provider value={project}>
+        <div className={`flex flex-col relative bg-white rounded-lg shadow-md mb-6 border-y-8 
+        ${isCryptoProject ? "border-blue-500" : "border-yellow-500"} justify-start min-w-min 
+        cursor-pointer transition-transform hover:scale-105 transform-gpu hover:shadow-xl`} onClick={handleProjectClick}>
             <div className="flex items-center">
                 <h2 className={`text-lg font-semibold ${isCryptoProject ? "text-blue-600" : "text-yellow-500"} text-balance pl-4`}>
                     {project_title}
@@ -54,6 +78,19 @@ const ProjectCard = ({ project }) => {
                 />
             </div>
         </div>
+
+        <SlidingPane
+        isOpen={isOpen}
+        title="Project Details"
+        // subtitle="Fill in the details"
+        onRequestClose={handleClose}
+        from="top"
+        width="90%"
+        childrenWrapperStyle={{ background: "#0f0000" }}
+      >
+        <NormalProjectModal />
+      </SlidingPane>
+        </normalprojectcontext.Provider>
     );
 };
 
