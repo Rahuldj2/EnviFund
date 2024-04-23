@@ -1,31 +1,31 @@
 // components/SignupForm.js
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { useSession,getSession } from "next-auth/react";
 
 const SignupForm = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData,setFormData] = useState({
     name: "",
     country: "",
     city: "",
     date_of_birth: "",
     mobile_number: "",
-    email_id:  session?.user.email,
+    email_id: session?.user.email,
     type: "",
   });
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData,[e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
 
-    console.log(formData)
-    formData.email_id= session?.user.email
+    console.log(formData);
+    formData.email_id = session?.user.email;
     try {
-      const response = await fetch("/api/sign-up/sign-up", {
+      const response = await fetch("/api/sign-up/sign-up",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -38,7 +38,7 @@ const SignupForm = () => {
         console.error("Failed to add user details");
       }
     } catch (error) {
-      console.error("Error adding user details:", error);
+      console.error("Error adding user details:",error);
     }
   };
 
@@ -82,8 +82,27 @@ const SignupForm = () => {
 
       </div>
     </div>
-    
+
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+}
 
 export default SignupForm;
