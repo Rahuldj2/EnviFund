@@ -28,7 +28,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className={`flex justify-between items-center py-4 px-8 text-white sticky top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue ${scrolling ? "opacity-90" : ""
+      className={`flex justify-between w-screen sticky items-center py-2 px-8 text-white top-0 bg-gradient-to-r from-themeBlack via-calmBlue to-tealBlue z-50 transition-opacity duration-300 ${scrolling ? "opacity-95" : ""
         }`}
     >
       <div className="flex items-center space-x-8">
