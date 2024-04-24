@@ -16,11 +16,9 @@ const ProjectCreationForm = () => {
   });
 
   const [imageUrl,setImageUrl] = useState(null);
-  const [loading,setLoading] = useState(false); // State for loading progress
-  const { data: session } = useSession();
-  const loadingBarRef = useRef(null);
-
-  const BASEURL = process.env.NEXT_PUBLIC_BASE_URL;
+  // const { account, Moralis } = useMoralis();
+  const { data: session,status } = useSession();
+  const BASEURL = "https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_images/";
   const { runContractFunction: createProject } = useWeb3Contract({
     abi: contractABI,
     contractAddress: contractAddress,
