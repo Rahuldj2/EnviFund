@@ -59,10 +59,6 @@ const Home = () => {
               {/* Home content */}
               <Welcome />
             </div>
-            <div id="initiatives" className="min-h-screen">
-              {/* Initiatives content */}
-              <Initiatives />
-            </div>
             <div id="about" className="min-h-screen">
               {/* About content */}
               <About />
