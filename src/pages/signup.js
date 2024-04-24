@@ -2,6 +2,8 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { useSession,getSession } from "next-auth/react";
+import { toast, ToastContainer } from 'react-toastify';
+import LoadingBar from 'react-top-loading-bar';
 
 const SignupForm = () => {
   const { data: session } = useSession();
@@ -16,11 +18,16 @@ const SignupForm = () => {
     type: "",
   });
 
+  const [loading,setLoading] = useState(false);
+  const [progress,setProgress] = useState(0);
+
   const handleChange = (e) => {
     setFormData({ ...formData,[e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
+    setLoading(true);
+    setProgress(30); // Example: setting initial progress
 
     console.log(formData);
     formData.email_id = session?.user.email;
@@ -33,12 +40,17 @@ const SignupForm = () => {
         body: JSON.stringify(formData),
       });
       if (response.ok) {
+        toast.success("Signup successful");
         router.push("/"); // Redirect to home page after successful signup
       } else {
-        console.error("Failed to add user details");
+        throw new Error("Failed to add user details");
       }
     } catch (error) {
       console.error("Error adding user details:",error);
+      toast.error("Failed to sign up");
+    } finally {
+      setLoading(false);
+      setProgress(100); // Example: setting progress to 100% after completion
     }
   };
 
@@ -78,9 +90,17 @@ const SignupForm = () => {
       <div className="mt-6">
         <button onClick={handleSubmit} className="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600">Sign Up</button>
       </div>
-      <div className="h-14">
+      <div className="h-14"></div>
 
-      </div>
+      {/* Loader */}
+      <LoadingBar
+        color='#f11946'
+        progress={progress}
+        onLoaderFinished={() => setProgress(0)}
+      />
+
+      {/* Toast Container */}
+      <ToastContainer />
     </div>
 
   );
