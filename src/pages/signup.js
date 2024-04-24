@@ -1,20 +1,20 @@
 // components/SignupForm.js
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useSession } from "next-auth/react";
+import { useSession,getSession } from "next-auth/react";
 import { toast, ToastContainer } from 'react-toastify';
 import LoadingBar from 'react-top-loading-bar';
 
 const SignupForm = () => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [formData, setFormData] = useState({
+  const [formData,setFormData] = useState({
     name: "",
     country: "",
     city: "",
     date_of_birth: "",
     mobile_number: "",
-    email_id:  session?.user.email,
+    email_id: session?.user.email,
     type: "",
   });
 
@@ -22,17 +22,17 @@ const SignupForm = () => {
   const [progress,setProgress] = useState(0);
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData,[e.target.name]: e.target.value });
   };
 
   const handleSubmit = async () => {
     setLoading(true);
     setProgress(30); // Example: setting initial progress
 
-    console.log(formData)
-    formData.email_id= session?.user.email
+    console.log(formData);
+    formData.email_id = session?.user.email;
     try {
-      const response = await fetch("/api/sign-up/sign-up", {
+      const response = await fetch("/api/sign-up/sign-up",{
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -102,8 +102,27 @@ const SignupForm = () => {
       {/* Toast Container */}
       <ToastContainer />
     </div>
-    
+
   );
 };
+
+export async function getServerSideProps(context) {
+  const session = await getSession(context);
+
+  if (!session) {
+    return {
+      redirect: {
+        destination: '/',
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      session,
+    },
+  };
+}
 
 export default SignupForm;

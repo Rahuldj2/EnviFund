@@ -16,6 +16,7 @@ const MyProjects = () => {
   const [isPaneOpen,setIsPaneOpen] = useState(false);
 
   const [cryptoprojects, setProjects] = useState([]);
+  const [normalprojects, setNormalProjects] = useState([]);
   const { account } = useMoralis();
   const { data: session } = useSession();
 
@@ -26,7 +27,31 @@ const MyProjects = () => {
     }
   }, [account,cryptoprojects]);
 
+  useEffect(() => {
+   
+    if(session){
+      loadCurrencyData();
+    }
+        
+    
+      
+    }, [session]);
 
+  // api to fetch data from database
+async function loadCurrencyData(){
+  try{
+    console.log(session?.user.email)
+  const response = await fetch(`/api/project/fetch-projects-of-a-user?email_id=${session?.user.email}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch projects');
+  }
+  const data = await response.json();
+   console.log(data)
+  setNormalProjects(data);
+} catch (error) {
+  console.error('Error fetching projects:', error);
+}
+}
   async function loadData() {
     const web3modal = new Web3Modal();
     const connection = await web3modal.connect();
@@ -52,7 +77,7 @@ const MyProjects = () => {
         {/* CreateProjectCard component */}
         <CreateProjectCard onClick={handleCreateProjectClick} />
         {/* Map through projects and render ProjectCard components */}
-        {projects.map((project) => (
+        {normalprojects.map((project) => (
           <ProjectCard key={project.id} project={project} />
         ))}
         {/* THIS IS THE SEPARATION POINT */}

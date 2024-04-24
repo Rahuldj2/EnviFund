@@ -18,12 +18,12 @@ const ProjectCreationForm = () => {
     location: '',
     imageFile: null,
   });
-
+  
   const [imageUrl,setImageUrl] = useState(null);
   const [loading,setLoading] = useState(false); // State for loading progress
   const { data: session } = useSession();
   const loadingBarRef = useRef(null);
-
+  
   const BASEURL = "https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_images/";
 
   const { runContractFunction: createProject } = useWeb3Contract({
@@ -35,7 +35,7 @@ const ProjectCreationForm = () => {
       "_location": formData.location,"_imageUrL": imageUrl,"_ownerEmail": session?.user.email
     },
   });
-
+  
   const handleChange = (e) => {
     const { name,value } = e.target;
     setFormData({ ...formData,[name]: value });
@@ -73,6 +73,7 @@ const ProjectCreationForm = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    console.log(formData);
     try {
       if (formData.fundingType === 'cryptocurrency' && imageUrl != null) {
         await createProject();

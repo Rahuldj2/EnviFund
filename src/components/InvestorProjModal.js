@@ -13,14 +13,36 @@ const InvestorProjModal = () => {
     const [isFundingInputOpen, setIsFundingInputOpen] = useState(false);
     const [investors, setInvestors] = useState([]);
     const [investorSpecific, setSpecific] = useState({});
+    const[updates,setUpdates]=useState([{}]);
 
     useEffect(() => {
         loadInvestorData();
+        loadUpdates();
     }, []);
 
     useEffect(() => {
         console.log(investorSpecific)
     }, [investorSpecific]);
+
+
+    useEffect(() => {
+        console.log(updates[0])
+    }, [updates]);
+
+    
+    async function loadUpdates(){
+        const web3modal = new Web3Modal();
+        const connection = await web3modal.connect();
+        const provider = new ethers.providers.Web3Provider(connection);
+        const signer = provider.getSigner();
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+        const updates_incoming = await contract.getUpdatesByProject(project.project_id);
+        // console.log(project.project_id)
+        // console.log(updates_incoming)
+
+        setUpdates(updates_incoming);
+        // console.log(updates);
+    }
 
     async function loadInvestorData() {
         const web3modal = new Web3Modal();
@@ -135,9 +157,27 @@ const InvestorProjModal = () => {
                     <h3 className="text-lg font-semibold">Owner Email:</h3>
                     <p>{project.ownerEmail}</p>
                 </div>
+                
                 <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Image URL:</h3>
-                    <p>{project.imageURL}</p>
+                    <h3 className="text-lg font-semibold">Updates:</h3>
+                    {updates == null ? (
+                            <div>
+                                No updates available
+                            </div>
+                        ) : (
+                            <div>
+                                {updates.map((update, index) => (
+                                    <div key={index} className="bg-white rounded-lg shadow-md p-6">
+                                        {update[0]}
+
+                                        <img src={update[1]}  className="w-64 h-32 object-cover mb-2" />
+            
+                                    </div>
+
+                                ))}
+                            </div>
+                        )}
+
                 </div>
 
                 <div className="mb-4">

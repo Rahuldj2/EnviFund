@@ -2,27 +2,39 @@ import React, { useContext, useEffect, useState} from "react";
 import { projectInfoContext } from './ProjectCardCrypto';
 import { contractABI, contractAddress } from '../../Contracts/ContractDetails';
 import Web3Modal from "web3modal";
-import { useMoralis,useWeb3Contract } from 'react-moralis';
+import { useMoralis, useWeb3Contract } from 'react-moralis';
+import supabase from '../pages/api/dbConnection/dbConnect';
 import { ethers } from "ethers";
-import { useSession } from 'next-auth/react';
+import { normalprojectcontext } from "./ProjectCard";
 
 const ProjectDetailsModal = () => {
     const { account } = useMoralis();
     const project = useContext(projectInfoContext);
+    const normalproject = useContext(normalprojectcontext);
     const [fundingAmount, setFundingAmount] = useState("");
-    const[AmountinWei,setAmountinWei]=useState(0);
+    const [AmountinWei, setAmountinWei] = useState(0);
     const [isFundingInputOpen, setIsFundingInputOpen] = useState(false);
-    const[investors,setInvestors]=useState([]);
+    const [investors, setInvestors] = useState([]);
+    const [investorSpecific, setSpecific] = useState({});
+    const [updateText, setUpdateText] = useState("");
+    const [updateImage, setUpdateImage] = useState(null);
+    const [ImageupdateUrl, setUpdateImageUrl] = useState(null);
+    const[updateOpen,setUpdateOpen]=useState(false);
+
+    const BASEURL ="https://mvqaptgoblyycfsjzfly.supabase.co/storage/v1/object/public/projectimages/project_update_images/"
+
+
+    const[ImageURL,setImageUrl]=useState(null);
+
 
     useEffect(() => {
         console.log("amamamama");
         loadInvestorData();
     }, []);
 
-
     useEffect(() => {  
         console.log(investors)
-        }, [investors]);
+    }, [investors]);
 
     async function loadInvestorData() {
         const web3modal = new Web3Modal();
@@ -31,44 +43,124 @@ const ProjectDetailsModal = () => {
         const signer = provider.getSigner();
         const contract = new ethers.Contract(contractAddress, contractABI, signer);
         const investors_ret = await contract.getAllInvestorsByProject(project.project_id);
+
+        const investorFundingData = {}; 
+
+        await Promise.all(
+            investors_ret.map(async (investor) => {
+                const investorSpecific = await contract.getInvestorFundingForProject(investor, project.project_id);
+                investorFundingData[investor] = investorSpecific;
+            })
+        );
         setInvestors(investors_ret);
-      }
+        setSpecific(investorFundingData);
+    }
 
     const handleFundProject = () => {
         setIsFundingInputOpen(true);
     };
 
+    const convertToMatic = (wei) => {
+        const conversionFactor = 10 ** 18; // 1 Matic = 10^18 Wei
+        return wei / conversionFactor;
+    };
+
     const handleFundingAmountChange = (e) => {
-        
         setFundingAmount(e.target.value);
     };
 
-    const {runContractFunction: fundProject}=useWeb3Contract({
-        abi:contractABI,
-        contractAddress:contractAddress,
-        functionName:"fundProject",
-        params:{"_projectId":project.project_id},
-        msgValue:AmountinWei
-    })
+    const handleUpdateProject = () => {
+        setUpdateOpen(!updateOpen);
+    }
+
+    const handleUpdateTextChange = (e) => {
+        setUpdateText(e.target.value);
+    };
+
+ 
+
+    const handleUpdateImageChange = async (e) => {
+        try {
+          let file = e.target.files[0];
+          setUpdateImage(e.target.files[0]);
+          const { data, error } = await supabase.storage
+            .from('projectimages')
+            .upload(`project_update_images/${updateText}/${file.name}`, file);
+      
+          if (error) {
+            throw error;
+          }
+      
+          if (data) {
+            console.log("Image uploaded:", data);
+            
+        const url = BASEURL+updateText+"/"+file.name;
+        setUpdateImageUrl(url);
+
+          
+        console.log("Image URL:", url);
+          }
+      
+        
+        } catch (error) {
+          console.error("Error handling image change:", error);
+          // Handle error (e.g., display error message to the user)
+        }
+      };
+    const hexToDecimal = (hexString) => {
+        return parseInt(hexString, 16);
+    };    
+
+    const {runContractFunction: fundProject} = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "fundProject",
+        params: {"_projectId": project.project_id},
+        msgValue: AmountinWei
+    });
 
 
+    const {runContractFunction: giveUpdate} = useWeb3Contract({
+        abi: contractABI,
+        contractAddress: contractAddress,
+        functionName: "giveUpdate",
 
-    const handleFundingSubmit = async() => {
-        // Implement the functionality to fund the project using fundingAmount
+        params: {"_projectId": project.project_id,"_update":updateText,"_imageUrl":ImageupdateUrl},
+
+    });
+
+    const handleFundingSubmit = async () => {
         console.log("Funding Amount:", fundingAmount);
         console.log(typeof(fundingAmount))
-        if (project.isCryptoProject)
-        {
-            //invole contract function
+        if (project.isCryptoProject) {
             const fundingInWei = Number(fundingAmount) * 10**18;
             console.log("Funding Amount in Wei:", fundingInWei);
-            // setFundingAmount(fundingInWei)
             setAmountinWei(fundingInWei)
             await fundProject()
         }
-        // Here you can add logic to fund the project
     };
     
+    const handleUpdateSubmit = async () => {
+        // Implement the functionality to fund the project using fundingAmount
+        console.log("Update Text:", updateText);
+        console.log("Update Image:", updateImage);
+            // Convert the text and image to bytes
+
+
+            if(ImageupdateUrl!=null){
+                await giveUpdate().then((result) => {
+                    console.log(result);
+                });
+            }
+       
+
+        console.log("hello")
+
+        
+        // Here you can add logic to fund the project
+    };
+
+
     return (
         <div className="p-4">
             <h2 className="text-xl font-semibold text-white mb-4">Project Details</h2>
@@ -76,7 +168,6 @@ const ProjectDetailsModal = () => {
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Project Title:</h3>
                     <p>{project.project_title}</p>
-                    {/* <p>{project.project_id}</p> */}
                 </div>
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Location:</h3>
@@ -106,16 +197,24 @@ const ProjectDetailsModal = () => {
                     <h3 className="text-lg font-semibold">Owner Email:</h3>
                     <p>{project.ownerEmail}</p>
                 </div>
-                <div className="mb-4">
-                    <h3 className="text-lg font-semibold">Image URL:</h3>
-                    <p>{project.imageURL}</p>
-                </div>
-
+                {project.imageURL && (
+                    <div className="mb-4">
+                        <h3 className="text-lg font-semibold">Image:</h3>
+                        <img src={project.imageURL} alt="Project Image" className="w-full h-48 object-cover mb-2" />
+                    </div>
+                )}
                 <div className="mb-4">
                     <h3 className="text-lg font-semibold">Investors:</h3>
                     {investors.map((investor, index) => (
                         <div key={index} className="bg-white rounded-lg shadow-md p-6">
                             <h3 className="text-xl font-semibold mb-2 text-color-black">{investor}</h3>
+                        </div>
+                    ))}
+                </div>
+                <div>
+                    {Object.keys(investorSpecific).map((investor) => (
+                        <div key={investor}>
+                            Investor: {investor}, Amount funded: {convertToMatic(hexToDecimal(investorSpecific[investor][0]._hex))} MATIC, Locked: {convertToMatic(hexToDecimal(investorSpecific[investor][1]._hex))} MATIC
                         </div>
                     ))}
                 </div>
@@ -127,12 +226,20 @@ const ProjectDetailsModal = () => {
                         Fund Project
                     </button>
                 </div>
+                <div className="mt-6">
+                    <button
+                        onClick={handleUpdateProject}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md text-sm focus:outline-none hover:bg-blue-600"
+                    >
+                        Provide Updates
+                    </button>
+                </div>
                 {isFundingInputOpen && (
                     <div className="mt-4">
                         <input
                             type="number"
                             className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
-                            placeholder="Enter Amount(in MATIC or INR as per project requirement)"
+                            placeholder="Enter Amount (in MATIC or INR as per project requirement)"
                             value={fundingAmount}
                             onChange={handleFundingAmountChange}
                         />
@@ -144,9 +251,31 @@ const ProjectDetailsModal = () => {
                         </button>
                     </div>
                 )}
+                {updateOpen && (
+                    <div className="mt4">
+                        <h3 className="text-lg font-semibold mt-4">Update</h3>
+                        <textarea
+                            className="border border-gray-300 rounded-md px-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            placeholder="Enter Update Text"
+                            value={updateText}
+                            onChange={handleUpdateTextChange}
+                        />
+                        <input
+                            type="file"
+                            accept="image/*"
+                            className="border border-gray-300 rounded-md px-4 py-2 mt-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            onChange={handleUpdateImageChange}
+                        />
+                        <button
+                            onClick={handleUpdateSubmit}
+                            className="bg-blue-500 text-white px-4 py-2 mt-2 rounded-md text-sm focus:outline-none hover:bg-blue-600"
+                        >
+                            Submit Update
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
-};
-
+}
 export default ProjectDetailsModal;

@@ -1,4 +1,4 @@
-// pages/MyProjects.js
+// pages/MyInvestments.js
 import React,{ useState,useEffect } from 'react';
 import SlidingPane from 'react-sliding-pane';
 import 'react-sliding-pane/dist/react-sliding-pane.css';
@@ -6,6 +6,7 @@ import ProjectCard from "@/components/ProjectCard";
 import CreateProjectCard from "@/components/CreateProjectCard";
 import ProjectCreationForm from "@/components/ProjectCreationForm";
 import ProjectCardCrypto from "@/components/ProjectCardCrypto";
+import NormalInvestorCard from "@/components/NormalInvestorCard"
 // import InvestorCardCrypto from '@/components/InvestorCardCrypto';
 import { ethers } from "ethers";
 import Web3Modal from "web3modal";
@@ -15,10 +16,11 @@ import { useSession } from "next-auth/react";
 
 import InvestorCardCrypto from '@/components/InvestorCardCrypto';
 
-const MyProjects = () => {
+const MyInvestments = () => {
   const [isPaneOpen,setIsPaneOpen] = useState(false);
 
   const [cryptoprojects, setProjects] = useState([]);
+  const [normalprojects, setNormalProjects] = useState([]);
   const { account } = useMoralis();
   const { data: session } = useSession();
 
@@ -29,7 +31,15 @@ const MyProjects = () => {
     }
   }, [account,cryptoprojects]);
 
-
+  useEffect(() => {
+   
+  if(session){
+    loadCurrencyData();
+  }
+      
+  
+    
+  }, [session]);
   async function loadData() {
     const web3modal = new Web3Modal();
     const connection = await web3modal.connect();
@@ -39,6 +49,23 @@ const MyProjects = () => {
     const Projs = await contract.getAllInvestmentsByOwner(account);
     setProjects(Projs);
   }
+
+
+async function loadCurrencyData(){
+  try{
+    console.log(session?.user.email)
+  const response = await fetch(`/api/project/fetch-investments-done-by-user?investor_id=${session?.user.email}`);
+  if (!response.ok) {
+    throw new Error('Failed to fetch projects');
+  }
+  const data = await response.json();
+   console.log(data)
+  setNormalProjects(data);
+} catch (error) {
+  console.error('Error fetching projects:', error);
+}
+}
+
 
   const handleCreateProjectClick = () => {
     setIsPaneOpen(true);
@@ -61,6 +88,10 @@ const MyProjects = () => {
       {cryptoprojects.map((project,index) => (
                 <InvestorCardCrypto key={index} project={project} funding_type="cryptocurrency" />
               ))}
+
+{normalprojects.map((project,index) => (
+                <NormalInvestorCard key={index} project={project}/>
+              ))}
       </div>
 
       {/* Sliding pane */}
@@ -79,7 +110,7 @@ const MyProjects = () => {
   );
 };
 
-export default MyProjects;
+export default MyInvestments;
 
 
 // const cryptoprojects = [

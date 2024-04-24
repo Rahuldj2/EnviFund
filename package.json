@@ -19,6 +19,7 @@
     "next-auth": "^4.24.7",
     "razorpay": "^2.9.2",
     "react": "^18",
+    "react-chartjs-2": "^5.2.0",
     "react-countup": "^6.5.3",
     "react-customizable-progressbar": "^1.2.0",
     "react-dom": "^18",

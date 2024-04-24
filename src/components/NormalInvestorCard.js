@@ -4,10 +4,11 @@ import Image from "next/image";
 import EthereumLogo from "/public/icons/icons8-ethereum-logo-128.png";
 import RupeeLogo from "/public/icons/icons8-rupee-100.png";
 import { useState,createContext } from "react";
+import NormalInvestorModal from "@/components/NormalInvestorModal"
 import SlidingPane from 'react-sliding-pane';
 import ProjectDetailsModal from "@/components/ProjectDetailsModal";
 import NormalProjectModal from "./NormalProjectModal";
-export const normalprojectcontext = createContext();
+export const normalinvestorprojectcontext = createContext();
 
 
 
@@ -20,9 +21,12 @@ const ProjectCard = ({ project }) => {
         funding_goal,
         funding_amount,
         funding_goal_reached,
-    } = project;
+    } = project.project_details;
+
+    const myContri= project.sum
+     const project_id = project.project_id
     const isCryptoProject = funding_type === "cryptocurrency";
-    const progress = (funding_amount / funding_goal) * 100;
+    const progress = (myContri/ funding_goal) * 100;
 
     const[isOpen,setOpen]=useState(false);
 
@@ -38,7 +42,7 @@ const ProjectCard = ({ project }) => {
       };
 
     return (
-        <normalprojectcontext.Provider value={project}>
+        <normalinvestorprojectcontext.Provider value={project}>
         <div className={`flex flex-col relative bg-white rounded-lg shadow-md mb-6 border-y-8 
         ${isCryptoProject ? "border-blue-500" : "border-yellow-500"} justify-start min-w-min 
         cursor-pointer transition-transform hover:scale-105 transform-gpu hover:shadow-xl`} onClick={handleProjectClick}>
@@ -88,9 +92,9 @@ const ProjectCard = ({ project }) => {
         width="90%"
         childrenWrapperStyle={{ background: "#0f0000" }}
       >
-        <NormalProjectModal />
+        <NormalInvestorModal />
       </SlidingPane>
-        </normalprojectcontext.Provider>
+        </normalinvestorprojectcontext.Provider>
     );
 };
 
